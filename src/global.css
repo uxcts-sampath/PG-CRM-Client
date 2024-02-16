@@ -1,0 +1,26 @@
+.pgsetup-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35rem;
+    background-color: #ffffff;
+    border: 1px solid #000;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.5); /* Adjust the shadow color and opacity as needed */
+    padding: 5px 30px 10px;
+}
+@media (max-width: 475px) {
+    .pgsetup-modal {
+        width: 90%; 
+        max-width: 100%;
+        padding: 5px 15px 10px;
+    }
+}
+
+
+.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    padding: 9.5px 14px !important;
+}
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 9.5px 14px !important;
+}

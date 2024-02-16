@@ -1,0 +1,33 @@
+.register-bgimg {
+    background-image: url(/images/hostel-01.jpg);
+    /* height: 100vh;
+    position: fixed;
+    width: 100%; */
+}
+.bgfloor{
+    /* background:#cbd7e2; */
+    background:#FFF;
+    .col-xl-2{
+        padding-right: 6px !important;
+        padding-left: 6px !important;
+    }
+}
+
+.b-l-single{
+    border-left: 4px solid rgb(47, 126, 47);
+    .card-title .typcn:before{
+        font-size: 1.5rem !important;
+        color: rgb(47, 126, 47);
+    }
+}
+.b-l-share{
+    border-left: 4px solid rgb(55, 53, 171);
+    .card-title .typcn:before{
+        font-size: 1.5rem !important;
+        color: rgb(55, 53, 171);
+    }
+}
+.room-count-input{
+    width:40px;
+    float:right; margin: 0 5px;
+}
