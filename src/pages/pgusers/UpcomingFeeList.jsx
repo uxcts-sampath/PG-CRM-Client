@@ -299,14 +299,18 @@ const UpcomingFeeList = () => {
                     <h4 className="card-title mb-3">Upcome Fee payment List</h4>
                   </div>
                 </div>
-                <div className="col-lg-6">
+
+              
+
+                {/* <div className="col-lg-6">
                   <div className="d-flex align-items-center justify-content-md-end">
                     <input type="text" placeholder="search student" />{" "}
                     <button className=" btn-outline-secondary">search</button>
                   </div>
-                </div>
+                </div> */}
               </div>
-              <div className="table-responsive">
+             
+              {/* <div className="table-responsive">
                 <table className="table">
                   <thead>
                     <tr>
@@ -525,7 +529,10 @@ const UpcomingFeeList = () => {
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> */}
+               <div>
+                <h1>No Data Found</h1>
+               </div>
             </div>
           </div>
         </div>

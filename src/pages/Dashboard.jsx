@@ -7,13 +7,15 @@ import Home from '../components/Home';
 import PgSetup from './PgSetup';
 import PgUsers from './pgusers/PgUsers';
 import Profile from '../components/Profile';
-import Billing from './Billing';
 import Department from './department';
 import UpcomingFeeList from './pgusers/UpcomingFeeList';
-import Staff from './Staff';
+import PgStaff from './pgstaff/pgStaff'
 import Income from '../pages/finance/Income';
 import Expenses from '../pages/finance/Expenses';
 import AddUsers from './pgusers/AddUsers';
+import AddStaff from './pgstaff/AddStaff';
+import MemberShip from './MemberShip';
+import CalendarPage from './CalendarPage';
 
 const Dashboard = () => {
   const routes = [
@@ -21,13 +23,15 @@ const Dashboard = () => {
     { path: 'pgsetup', element: <PgSetup /> },
     {path:'pgusers', element:<PgUsers/>},
     {path:'profile',element:<Profile/>},
-    {path:'billing', element:<Billing/>},
+    {path:'membership', element:<MemberShip/>},
     {path:'department',element:<Department/>},
     {path:'upcomingfeelist',element:<UpcomingFeeList/>},
-    {path:'staff', element:<Staff/>},
+    {path:'pgstaff', element:<PgStaff/>},
     {path:'incomes',element:<Income/>},
     {path:'expenses',element:<Expenses/>},
-    {path:'pgusers/addusers',element:<AddUsers/>}
+    {path:'pgusers/addusers',element:<AddUsers/>},
+    {path:'pgstaff/addstaff', element:<AddStaff/>},
+    {path:'calender', element:<CalendarPage/>}
   ];
 
   const element = useRoutes(routes);

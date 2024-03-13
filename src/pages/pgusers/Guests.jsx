@@ -81,7 +81,7 @@ useEffect(()=>{
                   <tbody>
 
             {guestData?.length>0 && guestData?.map((val)=>(
-                    <tr>
+                    <tr key={val._id}>
                       <td>
                         <div className="d-flex">
                           <img
@@ -110,7 +110,7 @@ useEffect(()=>{
                         <div className=" mt-1">{val.state}</div>
                       </td>
                       <td>
-                        <div className=" mt-1"># {val.allotRoom.room}</div>
+                        <div className=" mt-1"># </div>
                       </td>
                       <td>
                         <div className=" mt-1">28th Jan</div>

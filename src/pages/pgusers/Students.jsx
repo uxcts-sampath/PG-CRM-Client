@@ -1,12 +1,19 @@
 import React, { useState,useEffect } from "react";
 import userprofileImage from "/theme/images/faces/face29.png";
-// import UpcomingFeeList from "./UpcomingFeeList";
+import { useNavigate } from "react-router-dom";
+
 
 const Students = () => {
 
   const token = sessionStorage.getItem("token")
   const [studentData,setStudentData]=useState([])
-
+  const navigate= useNavigate()
+  
+  const handleEditAction = (student) => {
+    navigate('addusers', { state: { user: student } });
+  };
+  
+ 
   const handleStudentData = () => {
     fetch("/api/students", {
         method: 'GET', 
@@ -22,17 +29,20 @@ const Students = () => {
         return response.json();
     })
     .then(data => {
-        setStudentData(data)
+      console.log('dfdfdf',data)
+      setStudentData(data)
     })
     .catch(error => {
         // Handle errors occurred during fetch
         console.error('Error:', error);
     });
 }
-
-useEffect(()=>{
-  handleStudentData()
-},[])
+    
+  
+  useEffect(() => {
+    handleStudentData();
+  }, []); // Ensure proper dependencies are included if needed
+  
 
   return (
     <>
@@ -80,8 +90,8 @@ useEffect(()=>{
                     </tr>
                   </thead>
                   <tbody>
-                    {studentData?.length>0 && studentData?.map((val)=>(
-                       <tr>
+                    {studentData?.length>0 && studentData?.map((student)=>(
+                       <tr key={student._id}>
                        <td>
                          <div className="d-flex">
                            <img
@@ -90,42 +100,42 @@ useEffect(()=>{
                              alt="profile image"
                            />
                            <div>
-                             <div className=" mt-2">{val.name}</div>
+                             <div className=" mt-2">{student.name}</div>
                            </div>
                          </div>
                        </td>
                        <td>
-                         <div className="  mt-1">{val.mobile} </div>
+                         <div className="  mt-1">{student.mobile} </div>
                        </td>
  
                        <td>
-                         <div className=" mt-1">{val.studyingAt} </div>
+                         <div className=" mt-1">{student.studyingAt} </div>
                        </td>
  
                        <td>
-                         <div className=" mt-1">{val.residenceCity} </div>
+                         <div className=" mt-1">{student.residenceCity} </div>
                        </td>
  
                        <td>
-                         <div className=" mt-1">{val.state}</div>
+                         <div className=" mt-1">{student.state}</div>
                        </td>
+                       {/* <td>
+                         <div className=" mt-1">#{student.allotRoom.room}</div>
+                       </td> */}
                        <td>
-                         <div className=" mt-1">#{val.allotRoom.room}</div>
-                       </td>
-                       <td>
-                         <div className=" mt-1">Billing Date</div>
+                         <div className=" mt-1">{student._id}</div>
                        </td>
                        <td>
                          <div className=" text-success  mt-1">Pending</div>
                        </td>
                        <td>
                          <div className="font-weight-bold  mt-1">
-                           <button
-                             type="button"
-                             className="btn btn-sm btn-secondary"
-                           >
-                             edit actions
-                           </button>
+                         <button
+                            type="button"
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => handleEditAction(student)}>
+                            edit actions
+                          </button>
                          </div>
                        </td>
                      </tr>

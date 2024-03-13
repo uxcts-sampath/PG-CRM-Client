@@ -8,6 +8,9 @@ import Switch from '@mui/material/Switch';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import CircleIcon from '@mui/icons-material/Circle';
+import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
+
 
 
 
@@ -18,6 +21,7 @@ import Select from '@mui/material/Select';
   const [floorName,setFloorName]=useState("");
   const [floors,setFloors]=useState([]);
   const [floorId,setFloorId]=useState("")
+  const [roomId,setRoomId]= useState("")
 
   const [floorOpen, setFloorOpen] = React.useState(false);
   const handleFloorOpen = () => setFloorOpen(true);
@@ -25,11 +29,12 @@ import Select from '@mui/material/Select';
 
   const [roomOpen, setRoomOpen] = React.useState(false);
   
-  const handleRoomOpen = (floorId) => {
+  const handleRoomOpen = (floorId) => { 
     setRoomOpen(true);
     setFloorId(floorId);
+    setRoomId(roomId)
   };
- 
+
  
   const handleRoomClose = () => setRoomOpen(false);
 
@@ -86,9 +91,17 @@ const handleSubmit = async () => {
   const handleToggleChange = ()=>{
     setAttachedWashroom((prev) => !prev);
   }
+
   const handleRoomTypeChange = (event) => {
-    setRoomType(event.target.value);
+    const selectedRoomType = event.target.value;
+  
+    // Set the room type
+    setRoomType(selectedRoomType);
+    if (selectedRoomType === "single") {
+      setNumberOfBeds(1); // Set default number of beds to 1
+    }
   };
+  
   
   const handleShelfChange=()=>{
     setShelfChecked((prev) => !prev);
@@ -142,7 +155,7 @@ const handleSubmit = async () => {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}` 
       },
     })
     .then(response => {
@@ -156,30 +169,73 @@ const handleSubmit = async () => {
     })
     .catch(error => console.error('Error fetching floor data:', error));
   };
-  
+  console.log(floors)
 
-  const handleFloorDelete = async (floorId) => {
-    try {
-      const response = await fetch(`/api/floor/${floorId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
- 
-      if (!response.ok) {
+  
+  // Update handleFloorDelete function in Pgsetup component
+const handleFloorDelete = async (floorId) => {
+  try {
+    const response = await fetch(`/api/floors/${floorId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+  
+    if (!response.ok) {
+      if (response.status === 400) {
+        const data = await response.json();
+        console.error('Error deleting floor:', data.message);
+        alert(data.message); // Show an alert with the error message
+      } else {
         throw new Error('Failed to delete floor');
       }
-  
+    } else {
       console.log('Floor deleted successfully');
-      // Optionally, you can perform additional actions after successful deletion
-    } catch (error) {
-      console.error('Error deleting floor:', error.message);
-      // Handle error appropriately, such as showing a notification to the user
+      // Fetch floors again to update the UI after deletion
+      floorData();
     }
-  };
+  } catch (error) {
+    console.error('Error deleting floor:', error.message);
+    // Handle other errors, such as network issues
+  }
   
+};
+
+
+
+
+
+  
+
+
+
+// Define an asynchronous function to handle room deletion
+const handleRoomDelete = async (roomId) => {
+  try {
+    const response = await fetch(`/api/room/${roomId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete room');
+    }
+
+    console.log('Room deleted successfully');
+    // Fetch floors again to update the UI after deletion
+    floorData();
+
+  } catch (error) {
+    console.error('Error deleting room:', error.message);
+    // Handle error appropriately, such as showing a notification to the user
+  }
+};
+
 
   
 useEffect(()=>{
@@ -258,9 +314,7 @@ useEffect(()=>{
         </div>
       </div>
 
-      {floors?.length>0 && floors?.map((val)=>{
-     
-       
+      {floors?.length>0 && floors?.map((val)=>{ 
       return( 
          
       <div  className="row bgfloor p-3 mt-3">
@@ -273,13 +327,14 @@ useEffect(()=>{
         <div className="col-xl-6">
           <div className="d-flex align-items-center justify-content-md-end">
             <div className="pr-1 mb-3 mr-2 mb-xl-0">
-              <button
-                type="button"
-                className="btn btn-sm bg-white btn-icon-text border"
-                onClick={() => handleFloorDelete(val._id)}>
-                <i className="typcn typcn-trash mr-2"></i>
-                Delete Floor
-              </button>
+                <button
+                  type="button"
+                  className="btn btn-sm bg-white btn-icon-text border"
+                  onClick={() => handleFloorDelete(val._id)}> {/* Pass floor ID to handleFloorDelete */}
+                  <i className="typcn typcn-trash mr-2"></i>
+                  Delete Floor
+                </button>
+
             </div>
             <div className="pr-1 mb-3 mb-xl-0">
               <button type="button" className="btn btn-sm btn-primary btn-icon-text border" onClick={() => handleRoomOpen(val._id)}>
@@ -336,11 +391,16 @@ useEffect(()=>{
         <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
       </Box>
 
-      {/* Number of Beds */}
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="numberOfBeds">No. of beds</InputLabel>
-        <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
-      </Box>
+     {/* Number of Beds */}
+     {roomType === "shared" && (
+  <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+    <InputLabel htmlFor="numberOfBeds">No. of beds</InputLabel>
+    <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
+  </Box>
+)}
+
+
+
 
       {/* Buttons */}
       <Box style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
@@ -362,27 +422,43 @@ useEffect(()=>{
         
 
         {val.rooms.map(room => (
-          <div className="col-xl-2 d-flex stretch-card mb-2">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-between">
-                <div className="row b-l-share">
-                  <div className="col-lg-12">
-                    <h5 className="card-title mb-3">
-                      <i className=" typcn typcn-group mr-2"></i> #{room.roomNumber}
-                    </h5>
-                  </div>
-              <div className="col-lg-12">Total Beds - <input type="number" className="room-count-input" 
-                        value={room.numberOfBeds}/>
-              </div>
-
-                </div>
-              </div>
+  <div className="col-xl-2 d-flex stretch-card mb-2" key={room._id}>
+    <div className="card">
+      <div className="card-body">
+        <div className="d-flex flex-wrap justify-content-between">
+          <div className="row b-l-share ">
+            <div className="close-room">
+            <button onClick={() => handleRoomDelete(room._id)}><ClearIcon/></button>
             </div>
+            <div className="col-lg-12">
+              <h5 className="card-title mb-3">
+                {room.type === 'single' ? (
+                  <i className="typcn typcn-user mr-2"></i> /* Single icon */
+                ) : (
+                  <i className="typcn typcn-group mr-2"></i> /* Shared icon */
+                )}
+                # {room.roomNumber}
+              </h5>
+            </div>
+            <div className="col-lg-12">Beds -<span className="room-count-input">{room.numberOfBeds}</span>
+            </div>
+            <div className="col-lg-12">
+              {room.beds.map(bed => (
+                <span
+                key={bed._id}
+                className={`bed-icon ${bed.status === 'occupied' ? 'occupied' : ''}`}
+              >
+                {/* Render filled circle for occupied bed, otherwise render empty circle */}
+                {bed.status === 'occupied' ? <CircleIcon className="green-circle"/> : <CircleOutlinedIcon/>}
+              </span>
+              ))}
+            </div>          
           </div>
         </div>
- ))}
-
+      </div>
+    </div>
+  </div>
+))}
       </div>)})}
       
 

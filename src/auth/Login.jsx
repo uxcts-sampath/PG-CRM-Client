@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import logoWt from "/images/logo-wt.png";
 import { useAuth } from "../components/AuthContext";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 const Login = ({ onSignin }) => {
   const navigate = useNavigate();
@@ -13,13 +17,23 @@ const Login = ({ onSignin }) => {
   const [error, setError] = useState("");
   const token = sessionStorage.getItem("token");
 
-  useEffect(() => {
-    // Check if a token exists in sessionStorage upon component mount
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const location = useLocation();
 
+  useEffect(() => {
+    if (location.state && location.state.signupSuccess) {
+      setOpenSnackbar(true);
+    }
+  }, [location.state]);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
+ 
+  useEffect(() => {
     if (token) {
-      // If token exists, sign in the user
       onSignin();
-      // Redirect to the dashboard
       navigate("/home");
     }
   }, []);
@@ -34,55 +48,63 @@ const Login = ({ onSignin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password.");
       return;
     }
-
+  
     try {
       // Send login data to the backend for validation
       const response = await fetch("api/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(formData),
       });
-
+    
       if (response.status === 200) {
-        console.log("Login successful");
+     
         const responseData = await response.json();
-
-        const userId = responseData.user.id;
-        const userName = responseData.user.fullName;
-        const hostelName = responseData.user.hostelName;
-        const refreshToken = responseData.refreshToken;
-        console.log(refreshToken);
-
+     
+        const userId=responseData.user.id;
+        const userName=responseData.user.fullName;
+        const hostelName=responseData.user.hostelName;
+        const refreshToken=responseData.refreshToken;
+        const userSize=responseData.user.userSize
+      
         const { token } = responseData;
-        console.log("login token ", token);
-
+        console.log('login token ',token)
+        
         sessionStorage.setItem("token", token);
 
-        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("userId",userId)
 
-        sessionStorage.setItem("userName", userName);
+        sessionStorage.setItem("userName",userName)
 
-        sessionStorage.setItem("hostelName", hostelName);
+        sessionStorage.setItem("hostelName",hostelName)
 
-        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("refreshToken",refreshToken)
+
+        sessionStorage.setItem("userSize", userSize);
+
+      
 
         // Trigger the onSignin callback to update authentication state
         onSignin();
 
+
         // Redirect to the dashboard after successful login
         navigate("/home");
+
+       setOpen(true)
+       
       } else {
         const responseData = await response.json();
         console.log("Login failed", response.status, responseData.error);
-
+  
         if (response.status === 401) {
           if (responseData.error === "UserNotFound") {
             setError("Email does not exist.");
@@ -101,6 +123,10 @@ const Login = ({ onSignin }) => {
     }
   };
 
+  
+
+  
+  
   return (
     <>
       <div className="container-scroller">
@@ -142,7 +168,7 @@ const Login = ({ onSignin }) => {
                       >
                         SIGN IN
                       </button>
-                      {error && <div className="text-danger mt-2">{error}</div>}
+                      {error && <div className="text-danger mt-2">{error}</div>}    
                     </div>
                     <div className="my-2 d-flex justify-content-between align-items-center">
                       <div className="form-check">
@@ -151,7 +177,7 @@ const Login = ({ onSignin }) => {
                           Keep me signed in
                         </label>
                       </div>
-                      <a href="#" className="auth-link text-black">
+                      <a  className="auth-link text-black" style={{cursor:"pointer"}} onClick={()=>navigate("/forgotpassword")}>
                         Forgot password?
                       </a>
                     </div>
@@ -168,6 +194,22 @@ const Login = ({ onSignin }) => {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message="Signup completed successfully"
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right', 
+        }}
+      />
     </>
   );
 };

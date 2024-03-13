@@ -106,9 +106,9 @@ const Sidebar = () => {
                 </li>
                 <li className="nav-item">
                   {" "}
-                  <a className="nav-link" style={{cursor:'pointer'}} onClick={()=>navigate('billing')}
+                  <a className="nav-link" style={{cursor:'pointer'}} onClick={()=>navigate('membership')}
                   >
-                    Billing
+                    Membership
                   </a>
                 </li>
                 <li className="nav-item">
@@ -171,7 +171,7 @@ const Sidebar = () => {
                 <li className="nav-item">
                   <a
                     className="nav-link"
-                    style={{cursor:'pointer'}}  onClick={()=>navigate('staff')}
+                    style={{cursor:'pointer'}}  onClick={()=>navigate('pgstaff')}
                   >
                     Staff
                   </a>

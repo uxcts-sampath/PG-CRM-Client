@@ -31,3 +31,39 @@
     width:40px;
     float:right; margin: 0 5px;
 }
+
+.auth-bg-design {
+    background-image: url("../src/assets/auth-bg.png");
+    /* background-repeat: no-repeat; */
+    background-size: 100vh;
+
+    h2{
+        color: #FFF;
+        line-height: 35px;
+    }
+    .m-top-30{
+        margin-top: 40%;
+    }
+    .auth-box-txt{
+        background: #4A1FB894;
+        color: #FFF;
+    }
+}
+
+.close-room{
+    position: relative;
+    left: 100px;
+    .css-i4bv87-MuiSvgIcon-root{
+        width: 0.5em;
+        height:0.5em;
+       
+    }
+}
+
+.css-i4bv87-MuiSvgIcon-root{
+    width: 0.6em !important;
+}
+
+.green-circle {
+    color: green;
+  }

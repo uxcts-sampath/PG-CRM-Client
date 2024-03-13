@@ -41,7 +41,7 @@ const Navbar = () => {
         <div className="navbar-menu-wrapper d-flex align-items-center justify-content-end">
           <ul className="navbar-nav mr-lg-2">
             <li className="nav-item  d-none d-lg-flex">
-              <a className="nav-link" href="#">
+              <a className="nav-link"  onClick={()=>navigate('calender')}>
                 Calendar
               </a>
             </li>
