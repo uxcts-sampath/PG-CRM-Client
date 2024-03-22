@@ -45,16 +45,16 @@ const Navbar = () => {
                 Calendar
               </a>
             </li>
-            <li className="nav-item  d-none d-lg-flex">
+            {/* <li className="nav-item  d-none d-lg-flex">
               <a className="nav-link active" href="#">
                 Statistic
               </a>
             </li>
             <li className="nav-item  d-none d-lg-flex">
               <a className="nav-link" href="#">
-                Employee
+                PG Staff
               </a>
-            </li>
+            </li> */}
           </ul>
           <ul className="navbar-nav navbar-nav-right">
             <li className="nav-item d-none d-lg-flex  mr-2">

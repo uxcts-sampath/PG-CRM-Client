@@ -26,7 +26,7 @@ const pgUsers = () => {
       <div className="row">
         <div className="col-sm-6">
           <h4 className="mb-0">PG Users</h4>
-          <p>Your last login: 21h ago from newzealand.</p>
+          {/* <p>Your last login: 21h ago from newzealand.</p> */}
         </div>
         <div className="col-sm-6">
           <div className="d-flex align-items-center justify-content-md-end">

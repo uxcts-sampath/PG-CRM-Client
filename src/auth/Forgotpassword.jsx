@@ -49,10 +49,12 @@ const Forgotpassword = () => {
                         className="form-control form-control-lg"
                         id=""
                         placeholder="Enter Your Email"
+                        autoComplete="off"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
+                    
                     <div className="mt-3">
                       <button
                         type="submit"
@@ -61,6 +63,11 @@ const Forgotpassword = () => {
                         Reset Password
                       </button>
                     </div>
+                    {message && typeof message === 'string' ? (
+                        <p className="text-danger text-center">{message}</p>
+                      ) : (
+                        <p className="text-danger text-center">{message.message}</p>
+                      )}
 
                     <div className="text-center mt-4 font-weight-light">
                       Don't have an account?{" "}
@@ -72,11 +79,7 @@ const Forgotpassword = () => {
                       </button>
                     </div>
                   </form>
-                  {message && typeof message === 'string' ? (
-  <p>{message}</p>
-) : (
-  <p>{message.message}</p>
-)}
+                  
                 </div>
               </div>
             </div>

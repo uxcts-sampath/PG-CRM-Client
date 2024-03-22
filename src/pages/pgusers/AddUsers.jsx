@@ -88,9 +88,9 @@ const AddUsers=()=> {
       setBeds(notOccupiedBeds);
     } else if (name === 'bed') {
       // Handle bed selection
-      // Update form data with selected bed
       setFormData(prevState => ({ ...prevState, [name]: value }));
-    } else {
+    }
+     else {
       // Handle other form field changes
       setFormData(prevState => ({ ...prevState, [name]: value }));
     }
@@ -105,7 +105,7 @@ const AddUsers=()=> {
       const userDataFromLocation = location.state.user;
       // Ensure you're setting all form fields correctly here
       setFormData({
-        userId:userDataFromLocation._id,
+        hostelUserId:userDataFromLocation._id,
         userType: userDataFromLocation.userType,
         name: userDataFromLocation.name,
         fatherName: userDataFromLocation.fatherName,
@@ -125,87 +125,104 @@ const AddUsers=()=> {
         billingDate: userDataFromLocation.billingDate,
         amount: userDataFromLocation.amount,
       });
-    }
-  }, [location.state]);
   
-  
-console.log('dsfds',formData)
-  
-
-  
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  try {
-    // Construct the payload with updated user data
-    const formattedData = {
-      // Include user ID
-      userId: formData.userId,
-      userType: formData.userType,
-      name: formData.name,
-      fatherName: formData.fatherName,
-      mobile: formData.mobile,
-      age: parseInt(formData.age),
-      referredBy: formData.referredBy,
-      aadharNumber: formData.aadharNumber,
-      purposeFor: formData.purposeFor,
-      address: formData.address,
-      residenceCity: formData.residenceCity,
-      state: formData.state,
-      requireRoomType: formData.requireRoomType,
-      floor: formData.floor,
-      room: formData.room,
-      bed: parseInt(formData.bed),
-      billingCycle: formData.billingCycle,
-      billingDate: formData.billingDate,
-      amount: parseInt(formData.amount),
-    };
-
-    let url = '/api/createhosteluser';
-    let method = 'POST';
-
-    if (location.state && location.state.user) {
-      // If user data is available, it's an update operation
-      url = `/api/updatehosteluser/${formData.userId}`;
-      method = 'PUT';
-    }
-
-    // Check if the bed is already occupied before updating
-    if (method === 'PUT') {
-      const selectedRoom = floors.find(floor => floor._id === formData.floor)?.rooms.find(room => room._id === formData.room);
-      const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === formData.bed);
-      if (selectedBed && selectedBed.status === 'occupied') {
-        alert('The selected bed is already occupied. Please choose another bed.');
-        return;
+      // Set rooms and beds data after fetching completes
+      const selectedFloor = floors.find(floor => floor._id === userDataFromLocation.floor);
+      if (selectedFloor) {
+        // Find the selected room
+        const selectedRoom = selectedFloor.rooms.find(room => room._id === userDataFromLocation.room);
+        // Filter out occupied beds from selected room
+        const notOccupiedBeds = selectedRoom ? selectedRoom.beds.filter(bed => bed.status !== 'occupied') : [];
+        setRooms(selectedFloor.rooms);
+        setBeds(notOccupiedBeds);
       }
     }
+  }, [location.state, floors]); // Add floors dependency
+  
+  
+  
 
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formattedData),
-    });
 
-    const responseData = await response.json();
+  
 
-    if (!response.ok) {
-      throw new Error(responseData.message || 'Failed to submit form');
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      // Construct the payload with updated user data
+      const formattedData = {
+        
+        userType: formData.userType,
+        name: formData.name,
+        fatherName: formData.fatherName,
+        mobile: formData.mobile,
+        age: parseInt(formData.age),
+        referredBy: formData.referredBy,
+        aadharNumber: formData.aadharNumber,
+        purposeFor: formData.purposeFor,
+        address: formData.address,
+        residenceCity: formData.residenceCity,
+        state: formData.state,
+        requireRoomType: formData.requireRoomType,
+        floor: formData.floor,
+        room: formData.room,
+        bed: parseInt(formData.bed),
+        billingCycle: formData.billingCycle,
+        billingDate: formData.billingDate,
+        amount: parseInt(formData.amount),
+      };
+  
+      let url = '/api/createhosteluser';
+      let method = 'POST';
+  
+      if (location.state && location.state.user) {
+        // If user data is available, it's an update operation
+        url = `/api/updatehosteluser/${formData.hostelUserId}`;
+        method = 'PUT';
+      }
+  
+     
+  
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formattedData),
+      });
+  
+      const responseData = await response.json();
+  
+      if (response.ok) {
+        if (response.status === 201) {
+          // Update the selected bed status to 'occupied'
+          const selectedRoom = floors.find(floor => floor._id === formData.floor)?.rooms.find(room => room._id === formData.room);
+          const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === formData.bed);
+          if (selectedBed) {
+              selectedBed.status = 'occupied';
+          }
+  
+          console.log('Success:', responseData);
+          navigate('/home/pgusers'); // Navigate to the desired page on success
+        } else {
+          console.log('User created but bed allocation failed:', responseData);
+          navigate('/home/pgusers'); // Navigate to the desired page regardless
+        }
+      } else {
+        // Handle error for unsuccessful response
+        console.error('Error sending data:', responseData.message);
+        alert('An error occurred while submitting the form. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error sending data:', error.message);
+      alert('An error occurred while submitting the form. Please try again.');
     }
-
-    console.log('Success:', responseData);
-    navigate('/home/pgusers'); // Navigate to the desired page on success
-  } catch (error) {
-    console.error('Error sending data:', error.message);
-    alert('An error occurred while submitting the form. Please try again.');
-  }
-};
-
-const hostelUser=formData.userId
-  sessionStorage.setItem('hostelUser',hostelUser)
+  };
   
   
+
+ 
 
   const floorData = () => {
     fetch('/api/floors', {
@@ -227,22 +244,26 @@ const hostelUser=formData.userId
       .catch((error) => console.error('Error fetching floor data:', error));
   };
 
+
+
  
   useEffect(() => {
     floorData();
   }, []);
 
 
-  
-
+ 
     
 return(
     <>
-     <div className="row">
-        <div className="col-sm-6">
-          <h2 className="mb-0">Add User</h2>
-        </div>
-    </div>
+    <div className="row">
+  <div className="col-sm-6">
+    <h2 className="mb-0">
+      {location.state && location.state.user ? "Edit User" : "Add User"}
+    </h2>
+  </div>
+</div>
+
 
    <form >
    <div className="row  mt-3">
@@ -450,21 +471,24 @@ return(
       />
     </Grid>
     
-    <Grid item xs={12} sm={6}>
-  <Select
-    id="requireRoomType"
-    name="requireRoomType"
-    label="Required Room Type"
-    variant="standard"
-    fullWidth
-    required
-    defaultValue="select type"
-    onChange={handleChange}
-  >
-    <MenuItem value="select type" disabled>Select Bed Type</MenuItem>
-    <MenuItem value="single">Single</MenuItem>
-    <MenuItem value="shared">Shared</MenuItem>
-  </Select>
+<Grid item xs={12} sm={6}>
+<Select
+  id="requireRoomType"
+  name="requireRoomType"
+  label="Require Room Type"
+  variant="standard"
+  fullWidth
+  required
+  defaultValue="select type"
+  onChange={handleChange}
+>
+  <MenuItem value="select type" disabled>Select User Type</MenuItem>
+  <MenuItem value="single">Single</MenuItem>
+  <MenuItem value="shared">Shared</MenuItem>
+</Select>
+
+
+
 </Grid>
 
 
@@ -517,20 +541,29 @@ return(
     </FormControl>
   </Grid>
 
+
+  
+
   <Grid item xs={12} sm={2}>
-    <FormControl variant="standard" fullWidth required>
-      <InputLabel htmlFor="bed">Bed</InputLabel>
-      <Select
-        name="bed"
-        value={formData.bed}
-        onChange={handleChange}
-      >
-        {beds?.length > 0 && beds?.map((bed) => (
-          <MenuItem key={bed.bedNumber} value={bed.bedNumber}>{bed.bedNumber}</MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </Grid>
+  <FormControl variant="standard" fullWidth required>
+    <InputLabel htmlFor="bed">Bed</InputLabel>
+    <Select
+    id="bed"
+      name="bed"
+      label="Bed"
+      variant="standard"
+      fullWidth
+      required
+      value={formData.bed}
+      onChange={handleChange} 
+    >
+      {beds?.length > 0 && beds?.map((bed) => (
+        <MenuItem key={bed.bedNumber} value={bed.bedNumber}>{bed.bedNumber}</MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Grid>
+
 
 
 
@@ -592,7 +625,7 @@ return(
     <div className="row">
         <div className='col-12 mb-5'>
           <div className="d-flex align-items-center justify-content-md-end">
-        <Button variant="outlined" color="secondary"  className='mr-3'>Cancel</Button>
+        <Button variant="outlined" color="secondary"  className='mr-3' onClick={()=>navigate('/home/pgusers')}>Cancel</Button>
         <Button variant="contained" color="secondary" onClick={handleSubmit}>Create</Button>
         </div>
         </div>

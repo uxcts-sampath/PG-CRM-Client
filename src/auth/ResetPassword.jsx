@@ -20,6 +20,10 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (password.length < 8) {
+                throw new Error("Password must be at least 8 characters long.");
+            }
+    
             const response = await fetch('/api/resetpassword', {
                 method: "POST",
                 headers: {
@@ -27,18 +31,19 @@ const ResetPassword = () => {
                 },
                 body: JSON.stringify({ userId, token, password }),
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message);
             }
-
+    
             setMessage("Password reset successful");
             navigate('/');
         } catch (error) {
             setMessage(error.message);
         }
     };
+    
 
     return (
         <>

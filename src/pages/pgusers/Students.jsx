@@ -1,47 +1,102 @@
 import React, { useState,useEffect } from "react";
-import userprofileImage from "/theme/images/faces/face29.png";
 import { useNavigate } from "react-router-dom";
+import Modal from '@mui/material/Modal';
+import ClearIcon from '@mui/icons-material/Clear';
+import Typography from '@mui/material/Typography';
+import userprofileImage from "/theme/images/faces/face29.png";
+
 
 
 const Students = () => {
 
-  const token = sessionStorage.getItem("token")
-  const [studentData,setStudentData]=useState([])
-  const navigate= useNavigate()
-  
+  const token = sessionStorage.getItem("token");
+  const [studentData, setStudentData] = useState([]);
+  const [roomDetailsFetched, setRoomDetailsFetched] = useState(false); 
+  const navigate = useNavigate();
+  const [userOpen, setUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleUserOpen = () => setUserOpen(true);
+  const handleUserClose = () => setUserOpen(false);
+
   const handleEditAction = (student) => {
     navigate('addusers', { state: { user: student } });
   };
-  
- 
+
+  const handleViewAction = (student) => {
+    setSelectedUser(student);
+    handleUserOpen();
+  };
+
   const handleStudentData = () => {
     fetch("/api/students", {
-        method: 'GET', 
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
     })
-    .then(response => {
+      .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+          throw new Error('Network response was not ok');
         }
         return response.json();
-    })
-    .then(data => {
-      console.log('dfdfdf',data)
-      setStudentData(data)
-    })
-    .catch(error => {
-        // Handle errors occurred during fetch
+      })
+      .then(data => {
+        setStudentData(data);
+      })
+      .catch(error => {
         console.error('Error:', error);
-    });
-}
-    
-  
+      });
+  }
+
   useEffect(() => {
     handleStudentData();
-  }, []); // Ensure proper dependencies are included if needed
+  }, []);
+
+  console.log(studentData)
+
+  useEffect(() => {
+    if (studentData.length > 0 && !roomDetailsFetched) {
+      studentData.forEach(student => {
+        fetchRoomDetails(student.room, student._id); // Pass student._id to identify which student is being updated
+      });
+      setRoomDetailsFetched(true); // Mark room details as fetched
+    }
+  }, [studentData, roomDetailsFetched]); // Make sure studentData and roomDetailsFetched are included as dependencies
+
+  const fetchRoomDetails = (roomId, studentId) => {
+    fetch(`/api/room/${roomId}`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Update studentData with roomNumber for the corresponding student
+        setStudentData(prevStudentData => {
+          return prevStudentData.map(student => {
+            if (student._id === studentId) {
+              return { ...student, roomNumber: data.roomNumber };
+            }
+            return student;
+          });
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+  
+ 
+
   
 
   return (
@@ -119,11 +174,14 @@ const Students = () => {
                        <td>
                          <div className=" mt-1">{student.state}</div>
                        </td>
+                       <td>
+                         <div className=" mt-1">{student.roomNumber}</div>
+                       </td>
                        {/* <td>
-                         <div className=" mt-1">#{student.allotRoom.room}</div>
+                         <div className=" mt-1">{student._id}</div>
                        </td> */}
                        <td>
-                         <div className=" mt-1">{student._id}</div>
+                         <div className=" text-success  mt-1">Pending</div>
                        </td>
                        <td>
                          <div className=" text-success  mt-1">Pending</div>
@@ -132,16 +190,15 @@ const Students = () => {
                          <div className="font-weight-bold  mt-1">
                          <button
                             type="button"
-                            className="btn btn-sm btn-secondary"
+                            className="btn btn-sm btn-primary"
                             onClick={() => handleEditAction(student)}>
                             edit actions
                           </button>
+                          <button  className="btn btn-sm btn-primary ml-4" onClick={() => handleViewAction(student)}>view</button>
                          </div>
                        </td>
                      </tr>
                     ))}
-                
-                    
                   </tbody>
                 </table>
               </div>
@@ -149,6 +206,66 @@ const Students = () => {
           </div>
         </div>
       </div>
+
+
+     <Modal
+  open={userOpen}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+  className="modal-container"
+>
+  <div className="modal-content">
+    {/* Modal Content */}
+    <Typography style={{ cursor: 'pointer', textAlign: 'end' }} onClick={handleUserClose}>
+      <ClearIcon />
+    </Typography>
+
+
+    {/* User Details */}
+    <div>
+      {selectedUser && (
+        <>
+          <div className="user-info-item">
+            <span className="info-label">User Type:</span>
+            <span className="info-value">{selectedUser.userType}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">User Name:</span>
+            <span className="info-value">{selectedUser.name}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Mobile:</span>
+            <span className="info-value">{selectedUser.mobile}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Aadhar Number:</span>
+            <span className="info-value">{selectedUser.aadharNumber}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Phone Number:</span>
+            <span className="info-value">{selectedUser.mobile}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Father Number:</span>
+            <span className="info-value">{selectedUser.fatherName}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">City:</span>
+            <span className="info-value">{selectedUser.residenceCity}</span>
+          </div>
+          <div className="user-info-item">
+  <span className="info-label">Room Number:</span>
+  <span className="info-value">{selectedUser.roomNumber}</span>
+</div>
+
+
+        </>
+      )}
+    </div>
+  </div>
+</Modal>
+
+
     </>
   );
 };

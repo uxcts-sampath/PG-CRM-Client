@@ -52,7 +52,11 @@
 
 .close-room{
     position: relative;
-    left: 100px;
+    left: 80%;
+    button{
+        border:0px;
+        background:none;
+    }
     .css-i4bv87-MuiSvgIcon-root{
         width: 0.5em;
         height:0.5em;
@@ -67,3 +71,45 @@
 .green-circle {
     color: green;
   }
+
+
+  .modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    width: 400px;
+    height: 400px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    overflow: auto;
+    padding: 20px;
+  }
+
+  .user-info-item {
+    margin-bottom: 10px;
+  }
+  
+  .info-label {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .info-value {
+    /* Add your styles for the value here */
+    /* For example: */
+    color: #333;
+  }
+  
+  
+  
+  @media (max-width: 480px) {
+    .modal-content {
+      width: 90%;
+      height: 90%;
+    }
+  }
+  

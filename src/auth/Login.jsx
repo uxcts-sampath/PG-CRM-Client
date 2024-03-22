@@ -68,16 +68,24 @@ const Login = ({ onSignin }) => {
       if (response.status === 200) {
      
         const responseData = await response.json();
+        console.log('dgsfdv',responseData)
      
         const userId=responseData.user.id;
         const userName=responseData.user.fullName;
         const hostelName=responseData.user.hostelName;
         const refreshToken=responseData.refreshToken;
-        const userSize=responseData.user.userSize
+        const userSize=responseData.user.userSize;
+        const paymentPlan=responseData.user.hasActivePaymentPlan;
+        const suspensionDate=responseData.user.suspensionDate;
+        const hideFreeOption = responseData.user.hideFreeOption;
+
+    
+
+       
+        
       
         const { token } = responseData;
-        console.log('login token ',token)
-        
+       
         sessionStorage.setItem("token", token);
 
         sessionStorage.setItem("userId",userId)
@@ -86,9 +94,17 @@ const Login = ({ onSignin }) => {
 
         sessionStorage.setItem("hostelName",hostelName)
 
-        localStorage.setItem("refreshToken",refreshToken)
+        sessionStorage.setItem("refreshToken",refreshToken)
 
         sessionStorage.setItem("userSize", userSize);
+
+        sessionStorage.setItem("paymentPlan",paymentPlan)
+
+        sessionStorage.setItem("suspensionDate",suspensionDate)
+
+        sessionStorage.setItem("hideFreeOption",hideFreeOption)
+
+        console.log('susdfsdjn',suspensionDate)
 
       
 
@@ -103,6 +119,7 @@ const Login = ({ onSignin }) => {
        
       } else {
         const responseData = await response.json();
+      
         console.log("Login failed", response.status, responseData.error);
   
         if (response.status === 401) {
@@ -148,6 +165,7 @@ const Login = ({ onSignin }) => {
                         className="form-control form-control-lg"
                         id="exampleInputEmail1"
                         placeholder="Email"
+                        autoComplete="off"
                         onChange={handleInputChange}
                       />
                     </div>
@@ -158,6 +176,7 @@ const Login = ({ onSignin }) => {
                         className="form-control form-control-lg"
                         id="exampleInputPassword1"
                         placeholder="Password"
+                        autoComplete="off"
                         onChange={handleInputChange}
                       />
                     </div>

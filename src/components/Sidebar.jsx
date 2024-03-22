@@ -11,9 +11,7 @@ const Sidebar = () => {
   return (
     <>
       <div className="theme-setting-wrapper">
-        <div id="settings-trigger">
-          <i className="typcn typcn-cog-outline"></i>
-        </div>
+        
         <div id="theme-settings" className="settings-panel">
           <i className="settings-close typcn typcn-delete-outline"></i>
           <p className="settings-heading">SIDEBAR SKINS</p>

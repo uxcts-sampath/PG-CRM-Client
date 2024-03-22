@@ -1,39 +1,104 @@
 import React, { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Modal from '@mui/material/Modal';
+import ClearIcon from '@mui/icons-material/Clear';
+import Typography from '@mui/material/Typography';
 import userprofileImage from "/theme/images/faces/face29.png";
+
 
 const WorkingEmp = () => {
 
-  const token = sessionStorage.getItem("token")
-  const [workingEmpData,setworkingEmpData]=useState([])
+  const token = sessionStorage.getItem("token");
+  const [workingEmpData, setWorkingEmpData] = useState([]);
+  const [roomDetailsFetched, setRoomDetailsFetched] = useState(false); 
+  const navigate = useNavigate();
+  const [userOpen, setUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  
 
-  const handleEmpData = () => {
+  const handleUserOpen = () => setUserOpen(true);
+  const handleUserClose = () => setUserOpen(false);
+  
+  const handleEditAction = (workingEmp) => {
+    navigate('addusers', { state: { user: workingEmp } });
+  };
+  
+  const handleViewAction = (workingEmp) => {
+    setSelectedUser(workingEmp);
+    handleUserOpen();
+  };
+  
+
+  const handleWorkingEmpData = () => {
     fetch("/api/working-emp", {
-        method: 'GET', 
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
+      method: 'GET', 
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
     })
     .then(data => {
-      console.log(data)
-      setworkingEmpData(data)
+      setWorkingEmpData(data);
     })
     .catch(error => {
-        // Handle errors occurred during fetch
-        console.error('Error:', error);
+      console.error('Error:', error);
     });
-}
+  };
+  
+  useEffect(() => {
+    handleWorkingEmpData();
+  }, []);
+  
 
 
-useEffect(()=>{
-  handleEmpData()
-},[])
+useEffect(() => {
+  if (workingEmpData.length > 0 && !roomDetailsFetched) {
+    workingEmpData.forEach(workingEmp => {
+      fetchRoomDetails(workingEmp.room, workingEmp._id); 
+    });
+    setRoomDetailsFetched(true); // Mark room details as fetched
+  }
+}, [workingEmpData, roomDetailsFetched]);
+
+
+const fetchRoomDetails = (roomId, workingEmpId) => {
+  fetch(`/api/room/${roomId}`, {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Update workingEmpData with roomNumber for the corresponding working employee
+    setWorkingEmpData(prevWorkingEmpData => {
+      return prevWorkingEmpData.map(workingEmp => {
+        if (workingEmp._id === workingEmpId) {
+          return { ...workingEmp, roomNumber: data.roomNumber };
+        }
+        return workingEmp;
+      });
+    });
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+};
+
+
+
 
 
   return (
@@ -81,8 +146,8 @@ useEffect(()=>{
                   </thead>
                   <tbody>
 
-                    {workingEmpData?.length>0 && workingEmpData?.map((val)=>(
-                    <tr key={val._id}>
+                    {workingEmpData?.length>0 && workingEmpData?.map((workingEmp)=>(
+                    <tr key={workingEmp._id}>
                       <td>
                         <div className="d-flex">
                           <img
@@ -91,27 +156,27 @@ useEffect(()=>{
                             alt="profile image"
                           />
                           <div>
-                            <div className=" mt-2">{val.name}</div>
+                            <div className=" mt-2">{workingEmp.name}</div>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <div className="  mt-1">{val.mobile} </div>
+                        <div className="  mt-1">{workingEmp.mobile} </div>
                       </td>
 
                       <td>
-                        <div className=" mt-1">{val.purposeFor} </div>
+                        <div className=" mt-1">{workingEmp.purposeFor} </div>
                       </td>
 
                       <td>
-                        <div className=" mt-1">{val.city} </div>
+                        <div className=" mt-1">{workingEmp.city} </div>
                       </td>
 
                       <td>
-                        <div className=" mt-1">{val.state}</div>
+                        <div className=" mt-1">{workingEmp.state}</div>
                       </td>
                       <td>
-                        <div className=" mt-1"># </div>
+                        <div className=" mt-1">{workingEmp.roomNumber}</div>
                       </td>
                       <td>
                         <div className=" mt-1">28th Jan</div>
@@ -124,9 +189,12 @@ useEffect(()=>{
                           <button
                             type="button"
                             className="btn btn-sm btn-secondary"
+                            onClick={() => handleEditAction(workingEmp)}
                           >
                             edit actions
                           </button>
+                          <button  className="btn btn-sm btn-primary ml-4" onClick={() => handleViewAction(workingEmp)}>view</button>
+
                         </div>
                       </td>
                     </tr>
@@ -138,6 +206,66 @@ useEffect(()=>{
           </div>
         </div>
       </div>
+
+
+      <Modal
+  open={userOpen}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+  className="modal-container"
+>
+  <div className="modal-content">
+    {/* Modal Content */}
+    <Typography style={{ cursor: 'pointer', textAlign: 'end' }} onClick={handleUserClose}>
+      <ClearIcon />
+    </Typography>
+
+
+    {/* User Details */}
+    <div>
+      {selectedUser && (
+        <>
+          <div className="user-info-item">
+            <span className="info-label">User Type:</span>
+            <span className="info-value">{selectedUser.userType}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">User Name:</span>
+            <span className="info-value">{selectedUser.name}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Mobile:</span>
+            <span className="info-value">{selectedUser.mobile}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Aadhar Number:</span>
+            <span className="info-value">{selectedUser.aadharNumber}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Phone Number:</span>
+            <span className="info-value">{selectedUser.mobile}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">Father Number:</span>
+            <span className="info-value">{selectedUser.fatherName}</span>
+          </div>
+          <div className="user-info-item">
+            <span className="info-label">City:</span>
+            <span className="info-value">{selectedUser.residenceCity}</span>
+          </div>
+          <div className="user-info-item">
+  <span className="info-label">Room Number:</span>
+  <span className="info-value">{selectedUser.roomNumber}</span>
+</div>
+
+
+        </>
+      )}
+    </div>
+  </div>
+</Modal>
+
+
     </>
   );
 };
