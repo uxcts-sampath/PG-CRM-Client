@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
 import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 import userprofileImage from "/theme/images/faces/face29.png";
 
 const Guests = () => {
@@ -92,6 +95,31 @@ const Guests = () => {
     });
   }
 
+  const handleDelete = async (guestId) => {
+    try {
+      const response = await fetch(`/api/hosteluser/${guestId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, 
+        }
+      });
+      
+      
+      if (!response.ok) {
+        // If the server response is not OK, throw an error.
+        throw new Error('Failed to delete hostel user');
+      }
+  
+      // If everything went fine, log success message.
+      console.log("Deleted Hostel User Successfully");
+      handleGuestsData();
+    } catch (error) {
+      // Catch and log any errors that occur during the fetch or if the response is not ok.
+      console.error("Error during deletion:", error.message);
+    }
+  };
+
 
   return (
     <>
@@ -131,6 +159,7 @@ const Guests = () => {
 
                       <th>State</th>
                       <th>Room</th>
+                      <th>Guest ID</th>
                       <th>Billing Date</th>
                       <th>Fee Status</th>
                       <th>Action</th>
@@ -171,6 +200,9 @@ const Guests = () => {
                         <div className=" mt-1">{guest.roomNumber} </div>
                       </td>
                       <td>
+                        <div className=" mt-1">{guest.userReferenceId}</div>
+                      </td>
+                      <td>
                         <div className=" mt-1">28th Jan</div>
                       </td>
                       <td>
@@ -180,13 +212,13 @@ const Guests = () => {
                         <div className="font-weight-bold  mt-1">
                           <button
                             type="button"
-                            className="btn btn-sm btn-secondary"
+                            className="btn btn-sm border"
                             onClick={() => handleEditAction(guest)}
                           >
-                            edit actions
+                           <EditIcon/>
                           </button>
-                          <button  className="btn btn-sm btn-primary ml-4" onClick={() => handleViewAction(guest)}>view</button>
-
+                          <button  className="btn btn-sm border ml-2" onClick={() => handleViewAction(guest)}><VisibilityIcon/></button>
+                          <button className="btn btn-sm border ml-2" onClick={()=>handleDelete(guest._id)}><DeleteIcon/></button>
                         </div>
                       </td>
                     </tr>

@@ -202,7 +202,7 @@ const Login = ({ onSignin }) => {
                     </div>
                     <div className="text-center mt-4 font-weight-light">
                       Don't have an account?{" "}
-                      <a href="/register" className="text-primary">
+                      <a style={{cursor:"pointer"}} onClick={()=>navigate("/register")} className="text-primary">
                         Create
                       </a>
                     </div>

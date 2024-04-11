@@ -21,9 +21,12 @@ const AddUsers=()=> {
   const [rooms,setRooms]=useState([])
   const [beds,setBeds]=useState([])
 
-  
-  
+  const [errors, setErrors] = useState({});
+  const [singleBedPrice,setSingleBedPrice]=useState('')
+  const [sharingBedPrice,setSharingBedPrice]=useState('')
 
+  
+  
   
   
 
@@ -49,8 +52,58 @@ const AddUsers=()=> {
     bed: '',
     billingCycle: 'monthly',
     billingDate: '',
+    paymentType:'',
     amount: '',
+    billingAmount:''
   });
+
+
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  
+  //   if (name === 'requireRoomType') {
+  //     // Handle room type change
+  //     // Update form data with selected room type
+  //     setFormData(prevState => ({ ...prevState, [name]: value }));
+
+      
+  //     // Handle room type specific logic
+  //     if (value === 'single') {
+  //       // If single room type selected, show only single bed rooms
+  //       const singleBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'single'));
+  //       setRooms(singleBedRooms);
+  //     } else if (value === 'shared') {
+  //       // If shared room type selected, show rooms with more than one bed
+  //       const sharedBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'shared'));
+  //       setRooms(sharedBedRooms);
+  //     }
+  //     // Clear room and bed selections
+  //     setFormData(prevState => ({ ...prevState, floor: '', room: '', bed: '' }));
+  //   } else if (name === 'floor') {
+  //     // Handle floor selection
+  //     // Update form data with selected floor
+  //     setFormData(prevState => ({ ...prevState, [name]: value }));
+  //   } else if (name === 'room') {
+  //     // Handle room selection
+  //     // Update form data with selected room
+  //     setFormData(prevState => ({ ...prevState, [name]: value }));
+  //     // Find the selected room
+  //     const selectedRoom = rooms.find(room => room._id === value);
+  //     // Filter out occupied beds from selected room
+  //     const notOccupiedBeds = selectedRoom ? selectedRoom.beds.filter(bed => bed.status !== 'occupied') : [];
+  //     setBeds(notOccupiedBeds);
+  //   } else if (name === 'bed') {
+  //     // Handle bed selection
+  //     setFormData(prevState => ({ ...prevState, [name]: value }));
+  //     setErrors({ ...errors, [name]: '' }); // Clear error for the field on change
+  //   }
+  //    else {
+  //     // Handle other form field changes
+  //     setFormData(prevState => ({ ...prevState, [name]: value }));
+  //   }
+    
+  // };
 
 
 
@@ -61,15 +114,20 @@ const AddUsers=()=> {
       // Handle room type change
       // Update form data with selected room type
       setFormData(prevState => ({ ...prevState, [name]: value }));
+  
       // Handle room type specific logic
       if (value === 'single') {
         // If single room type selected, show only single bed rooms
         const singleBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'single'));
         setRooms(singleBedRooms);
+        // Set amount based on single bed price
+        setFormData(prevState => ({ ...prevState, amount: singleBedPrice }));
       } else if (value === 'shared') {
         // If shared room type selected, show rooms with more than one bed
         const sharedBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'shared'));
         setRooms(sharedBedRooms);
+        // Set amount based on shared bed price
+        setFormData(prevState => ({ ...prevState, amount: sharingBedPrice }));
       }
       // Clear room and bed selections
       setFormData(prevState => ({ ...prevState, floor: '', room: '', bed: '' }));
@@ -89,12 +147,22 @@ const AddUsers=()=> {
     } else if (name === 'bed') {
       // Handle bed selection
       setFormData(prevState => ({ ...prevState, [name]: value }));
-    }
-     else {
+      setErrors({ ...errors, [name]: '' }); // Clear error for the field on change
+    } else if(name === 'paymentType'){
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+      if (value === 'fullPayment') {
+        // Set billingAmount to amount entered by the user
+        setFormData(prevState => ({ ...prevState, billingAmount: formData.amount }));
+      } else {
+        // Set billingAmount to empty for advance payment type
+        setFormData(prevState => ({ ...prevState, billingAmount: '' }));
+      }
+    }else {
       // Handle other form field changes
       setFormData(prevState => ({ ...prevState, [name]: value }));
     }
   };
+  
   
   
 
@@ -117,13 +185,16 @@ const AddUsers=()=> {
         address: userDataFromLocation.address,
         residenceCity: userDataFromLocation.residenceCity,
         state: userDataFromLocation.state,
+        referenceMobile:userDataFromLocation.referenceMobile,
         requireRoomType: userDataFromLocation.requireRoomType,
         floor: userDataFromLocation.floor,
         room: userDataFromLocation.room,
         bed: userDataFromLocation.bed,
         billingCycle: userDataFromLocation.billingCycle,
         billingDate: userDataFromLocation.billingDate,
+        paymentType:userDataFromLocation.paymentType,
         amount: userDataFromLocation.amount,
+        billingAmount:userDataFromLocation.billingAmount
       });
   
       // Set rooms and beds data after fetching completes
@@ -139,7 +210,38 @@ const AddUsers=()=> {
     }
   }, [location.state, floors]); // Add floors dependency
   
-  
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.userType) newErrors.userType = 'User Type is required';
+    if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.fatherName) newErrors.fatherName = "Father's Name is required";
+    if (!formData.mobile) {
+      newErrors.mobile = 'Mobile Number is required';
+    } else if (formData.mobile.length !== 10) {
+      newErrors.mobile = 'Mobile Number must be exactly 10 digits';
+    }
+    if (!formData.age) newErrors.age = "Age is required";
+    if (!formData.aadharNumber) {
+      newErrors.aadharNumber = 'Aadhar Number is required';
+    } else if (formData.aadharNumber.length !== 12) {
+      newErrors.aadharNumber = 'Aadhar Number must be exactly 12 digits';
+    }
+    if (!formData.address) newErrors.address = "Address is required";
+    if (!formData.residenceCity) newErrors.residenceCity = "Residence City is required";
+    if (!formData.state) newErrors.state = "State is required";
+    if (!formData.referenceMobile) {
+      newErrors.referenceMobile = 'Reference Mobile Number is required';
+    } else if (formData.referenceMobile.length !== 10) {
+      newErrors.referenceMobile = 'Reference Mobile Number must be exactly 10 digits';
+    }
+    if (!formData.requireRoomType) newErrors.requireRoomType = 'Room Type is required';
+    if (!formData.billingDate) newErrors.billingDate = 'Billing Date Type is required';
+    if (!formData.amount) newErrors.amount = 'Amount is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   
 
 
@@ -148,6 +250,10 @@ const AddUsers=()=> {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       // Construct the payload with updated user data
       const formattedData = {
@@ -163,13 +269,16 @@ const AddUsers=()=> {
         address: formData.address,
         residenceCity: formData.residenceCity,
         state: formData.state,
+        referenceMobile:formData.referenceMobile,
         requireRoomType: formData.requireRoomType,
         floor: formData.floor,
         room: formData.room,
         bed: parseInt(formData.bed),
         billingCycle: formData.billingCycle,
         billingDate: formData.billingDate,
+        paymentType:formData.paymentType,
         amount: parseInt(formData.amount),
+        billingAmount:parseInt(formData.billingAmount),
       };
   
       let url = '/api/createhosteluser';
@@ -246,9 +355,39 @@ const AddUsers=()=> {
 
 
 
+  const handlePriceGet = () => {
+    fetch("/api/getprice", {
+      method: 'GET', 
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}` 
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch price data');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("dfgvdfvx",data)
+      console.log("dfgvdfvx",)
+     
+      // Update the state with the fetched prices
+      setSingleBedPrice(data.map((val)=>(val.singleBedPrice)));
+      setSharingBedPrice(data.map((val)=>(val.sharingBedPrice)));
+    })
+    .catch(error => {
+      console.error('Error fetching price data:', error);
+      // Handle error appropriately
+    });
+  };
+  
+
  
   useEffect(() => {
     floorData();
+    handlePriceGet();
   }, []);
 
 
@@ -289,7 +428,9 @@ return(
     <MenuItem value="working emp">Working Employee</MenuItem>
     <MenuItem value="guest">Guest</MenuItem>
   </Select>
+  <div className="Mui-error text-danger">{errors.userType}</div>
 </Grid>
+
 
 
     <Grid item xs={12} sm={6}>
@@ -299,23 +440,25 @@ return(
         name="name"
         label="Enter Name"
         fullWidth
-        autoComplete="given-name"
+        autoComplete="off"
         variant="standard"
         value={formData.name}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.name)}
+        helperText={errors.name}
       />
     </Grid>
     <Grid item xs={12} sm={6}>
       <TextField
         required
-        id="fatherName"
+        id="fatherName" 
         name="fatherName"
         label="Father name"
         fullWidth
-        autoComplete="father-name"
+        autoComplete="off"
         variant="standard"
         value={formData.fatherName}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.fatherName)}
+        helperText={errors.fatherName}
       />
     </Grid>
     <Grid item  xs={12} sm={6}>
@@ -325,10 +468,11 @@ return(
         name="mobile"
         label="Mobile Number"
         fullWidth
-        autoComplete="mobile-number"
+        autoComplete="off"
         variant="standard"
         value={formData.mobile}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.mobile)}
+        helperText={errors.mobile}
       />
     </Grid>
     <Grid item xs={12} sm={6}>
@@ -337,10 +481,12 @@ return(
         name="age"
         label="Age"
         fullWidth
-        autoComplete="age"
+        required
+        autoComplete="off"
         variant="standard"
         value={formData.age}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.age)}
+        helperText={errors.age}
       />
     </Grid>
     <Grid item xs={12} sm={6}>
@@ -349,7 +495,7 @@ return(
             name="referredBy"
             label="Referred By"
             fullWidth
-            autoComplete="referred-by"
+            autoComplete="off"
             variant="standard"
             value={formData.referredBy}
             onChange={handleChange}
@@ -361,50 +507,66 @@ return(
         name="aadharNumber"
         label="Aadhar Number"
         fullWidth
+        required
+        autoComplete="off"
         variant="standard"
         value={formData.aadharNumber}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.aadharNumber)}
+        helperText={errors.aadharNumber}
       />
     </Grid>
+
     <Grid item xs={12} sm={6}>
-      <TextField
-        required
+      <TextField  
         id="purposeFor"
         name="purposeFor"
         label="Purpose For"
         fullWidth
-        autoComplete="purpose-for"
+        autoComplete="off"
         variant="standard"
         value={formData.purposeFor}
         onChange={handleChange}
       />
     </Grid>
+
     <Grid item xs={12} sm={6}>
-    <TextField
-            type="file"
-            id="uploadAadhar"
-            name="uploadAadhar"
-            label="Upload Aadhar"
-            fullWidth
-            autoComplete="upload-aadhar"
-            variant="standard"
-            value={formData.uploadAadhar}
-            onChange={handleChange}
-          />
-    </Grid>
-    <Grid item xs={12} sm={6}>
-    <TextField
-            type="file"
-            id="addressProof"
-            name="addressProof"
-            label="Address Proof"
-            fullWidth
-            autoComplete="address-proof"
-            variant="standard"
-            value={formData.addressProof}
-            onChange={handleChange}
-          />
-    </Grid>
+  <FormControl fullWidth>
+    <InputLabel shrink htmlFor="uploadAadhar">
+      Upload Aadhar
+    </InputLabel>
+    <TextField  
+      type="file"
+      id="uploadAadhar"
+      name="uploadAadhar"
+      fullWidth
+      autoComplete="upload-aadhar"
+      variant="standard"
+      value={formData.uploadAadhar}
+      onChange={handleChange}
+    />
+  </FormControl>
+</Grid>
+
+
+<Grid item xs={12} sm={6}>
+  <FormControl fullWidth>
+    <InputLabel shrink htmlFor="addressProof">
+      Address Proof
+    </InputLabel>
+    <TextField  
+      type="file"
+      id="addressProof"
+      name="addressProof"
+      fullWidth
+      autoComplete="address-proof"
+      variant="standard"
+      value={formData.addressProof}
+      onChange={handleChange}
+    />
+  </FormControl>
+</Grid>
+
+
     <Grid item xs={12} >
       <TextField
         required
@@ -412,12 +574,14 @@ return(
         name="address"
         label="Address"
         fullWidth
-        autoComplete="address"
+        autoComplete="off"
         variant="standard"
         value={formData.address}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.address)}
+        helperText={errors.address}
       />
     </Grid>
+
     <Grid item xs={12} sm={6}>
       <TextField
         required
@@ -425,10 +589,11 @@ return(
         name="residenceCity"
         label="Residence City"
         fullWidth
-        autoComplete="residence-city"
+        autoComplete="off"
         variant="standard"
         value={formData.residenceCity}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.residenceCity)}
+        helperText={errors.address}
       />
     </Grid>
     <Grid item xs={12} sm={6}>
@@ -438,25 +603,33 @@ return(
         name="state"
         label="State"
         fullWidth
-        autoComplete="state"
+        autoComplete="off"
         variant="standard"
         value={formData.state}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.state)}
+        helperText={errors.state}
       />
     </Grid>
+    
     <Grid item xs={12} sm={6}>
-    <TextField
-            type="file"
-            id="profilePhoto"
-            name="profilePhoto"
-            label="Profile Photo"
-            fullWidth
-            autoComplete="profile-photo"
-            variant="standard"
-            value={formData.profilePhoto}
-            onChange={handleChange}
-          />
-    </Grid>
+  <FormControl fullWidth>
+    <InputLabel shrink htmlFor="profilePhoto">
+      Profile Photo
+    </InputLabel>
+    <TextField  
+      type="file"
+      id="profilePhoto"
+      name="profilePhoto"
+      fullWidth
+      autoComplete="profile-photo"
+      variant="standard"
+      value={formData.profilePhoto}
+      onChange={handleChange}
+    />
+  </FormControl>
+</Grid>
+
+
     <Grid item xs={12} sm={6}>
       <TextField
         required
@@ -464,10 +637,11 @@ return(
         name="referenceMobile"
         label="Reference Mobile Number"
         fullWidth
-        autoComplete="reference-mobile-number"
+        autoComplete="off"
         variant="standard"
         value={formData.referenceMobile}
-        onChange={handleChange}
+        onChange={handleChange}error={Boolean(errors.referenceMobile)}
+        helperText={errors.referenceMobile}
       />
     </Grid>
     
@@ -482,13 +656,11 @@ return(
   defaultValue="select type"
   onChange={handleChange}
 >
-  <MenuItem value="select type" disabled>Select User Type</MenuItem>
+  <MenuItem value="select type" disabled>Select Room User Type</MenuItem>
   <MenuItem value="single">Single</MenuItem>
   <MenuItem value="shared">Shared</MenuItem>
 </Select>
-
-
-
+<div className="Mui-error text-danger">{errors.requireRoomType}</div>
 </Grid>
 
 
@@ -565,15 +737,6 @@ return(
 </Grid>
 
 
-
-
-
-
-
-
-
-
-
     <Grid item xs={12} sm={6}>
           <Select
             id="billingCycle"
@@ -587,39 +750,83 @@ return(
             onChange={handleChange}
           >
              <MenuItem value="billing" disabled>Select Billing Type</MenuItem>
-            <MenuItem value="monthly">Monthly</MenuItem>
-            <MenuItem value="quarterly">Quarterly</MenuItem>
-            <MenuItem value="yearly">Yearly</MenuItem>
+            <MenuItem value="monthly"  >Monthly</MenuItem>
+            <MenuItem value="quarterly" disabled>Quarterly</MenuItem>
+            <MenuItem value="yearly" disabled>Yearly</MenuItem>
           </Select>
         </Grid>
-    <Grid item xs={12} sm={6}>
-    <TextField
-          required
-          id="billingDate"
-          name="billingDate"
-          label="Billing date"
-          fullWidth
-          autoComplete="billing-date"
-          variant="standard"
-          value={formData.billingDate}
-          onChange={handleChange}/>
-    </Grid>
-    <Grid item xs={12} sm={6}>
-      <TextField
-        required
-        id="amount"
-        name="amount"
-        label="Amount"
-        fullWidth
-        autoComplete="amount"
-        variant="standard"
-        value={formData.amount}
-        onChange={handleChange}
-      />
-    </Grid>
+
+       <Grid item xs={12} sm={6}>
+  <InputLabel htmlFor="billingDate">Billing date</InputLabel>
+  <TextField
+    required
+    id="billingDate"
+    name="billingDate"
+    type="date"
+    fullWidth
+    autoComplete="billing-date"
+    variant="standard"
+    value={formData.billingDate}
+    onChange={handleChange}error={Boolean(errors.billingDate)}
+    helperText={errors.billingDate}
+    InputLabelProps={{  
+      shrink: true,
+    }}
+  />
 </Grid>
-                </div>
-                </div>
+
+
+      <Grid item xs={12} sm={6}>
+        <TextField
+          required
+          id="amount"
+          name="amount"
+          label="Amount"
+          fullWidth
+          autoComplete="off"
+          variant="standard"
+          value={formData.amount}
+          onChange={handleChange}error={Boolean(errors.amount)}
+          helperText={errors.amount}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+<Select
+  id="paymentType"
+  name="paymentType"
+  label="Payment Type"
+  variant="standard"
+  fullWidth
+  required
+  defaultValue="Payment Type"
+  value={formData.paymentType}
+  onChange={handleChange}
+>
+  <MenuItem value="Payment Type" disabled>Payment Type</MenuItem>
+  <MenuItem value="advance">Advance</MenuItem>
+  <MenuItem value="fullPayment">Full Payment</MenuItem>
+</Select>
+</Grid>
+
+<Grid item xs={12} sm={6}>
+        <TextField
+          required
+          id="billingAmount"
+          name="billingAmount"
+          label="Billing Amount"
+          fullWidth
+          autoComplete="off"
+          variant="standard"
+          value={formData.billingAmount}
+          onChange={handleChange}error={Boolean(errors.billingAmount)}
+          helperText={errors.billingAmount}
+        />
+      </Grid>
+
+</Grid>
+    </div>
+      </div>
     </div>
     </div>
     <div className="row">

@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
 import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 import userprofileImage from "/theme/images/faces/face29.png";
 
 
@@ -98,6 +101,30 @@ const fetchRoomDetails = (roomId, workingEmpId) => {
 };
 
 
+const handleDelete = async (workingEmpId) => {
+  try {
+    const response = await fetch(`/api/hosteluser/${workingEmpId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, 
+      }
+    });
+    
+    
+    if (!response.ok) {
+      // If the server response is not OK, throw an error.
+      throw new Error('Failed to delete hostel user');
+    }
+
+    // If everything went fine, log success message.
+    console.log("Deleted Hostel User Successfully");
+    handleWorkingEmpData();
+  } catch (error) {
+    // Catch and log any errors that occur during the fetch or if the response is not ok.
+    console.error("Error during deletion:", error.message);
+  }
+};
 
 
 
@@ -139,6 +166,7 @@ const fetchRoomDetails = (roomId, workingEmpId) => {
 
                       <th>State</th>
                       <th>Room</th>
+                      <th>Working Emp ID</th>
                       <th>Billing Date</th>
                       <th>Fee Status</th>
                       <th>Action</th>
@@ -179,6 +207,9 @@ const fetchRoomDetails = (roomId, workingEmpId) => {
                         <div className=" mt-1">{workingEmp.roomNumber}</div>
                       </td>
                       <td>
+                        <div className=" mt-1">{workingEmp.userReferenceId}</div>
+                      </td>
+                      <td>
                         <div className=" mt-1">28th Jan</div>
                       </td>
                       <td>
@@ -188,13 +219,13 @@ const fetchRoomDetails = (roomId, workingEmpId) => {
                         <div className="font-weight-bold  mt-1">
                           <button
                             type="button"
-                            className="btn btn-sm btn-secondary"
+                            className="btn btn-sm border"
                             onClick={() => handleEditAction(workingEmp)}
                           >
-                            edit actions
+                            <EditIcon/>
                           </button>
-                          <button  className="btn btn-sm btn-primary ml-4" onClick={() => handleViewAction(workingEmp)}>view</button>
-
+                          <button  className="btn btn-sm border ml-2" onClick={() => handleViewAction(workingEmp)}><VisibilityIcon/></button>
+                          <button className="btn btn-sm border ml-2" onClick={()=>handleDelete(workingEmp._id)}><DeleteIcon/></button>
                         </div>
                       </td>
                     </tr>

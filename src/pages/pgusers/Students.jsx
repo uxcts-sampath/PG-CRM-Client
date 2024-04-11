@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
 import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 import userprofileImage from "/theme/images/faces/face29.png";
 
 
@@ -15,6 +18,7 @@ const Students = () => {
   const navigate = useNavigate();
   const [userOpen, setUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+ 
 
   const handleUserOpen = () => setUserOpen(true);
   const handleUserClose = () => setUserOpen(false);
@@ -50,11 +54,39 @@ const Students = () => {
       });
   }
 
+  console.log('gfdv',studentData)
+
   useEffect(() => {
     handleStudentData();
   }, []);
 
-  console.log(studentData)
+  const handleDelete = async (studentId) => {
+    try {
+      const response = await fetch(`/api/hosteluser/${studentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, 
+        }
+      });
+      
+      
+      if (!response.ok) {
+        // If the server response is not OK, throw an error.
+        throw new Error('Failed to delete hostel user');
+      }
+  
+      // If everything went fine, log success message.
+      console.log("Deleted Hostel User Successfully");
+      handleStudentData();
+    } catch (error) {
+      // Catch and log any errors that occur during the fetch or if the response is not ok.
+      console.error("Error during deletion:", error.message);
+    }
+  };
+  
+
+ 
 
   useEffect(() => {
     if (studentData.length > 0 && !roomDetailsFetched) {
@@ -139,8 +171,9 @@ const Students = () => {
 
                       <th>State</th>
                       <th>Room</th>
+                      <th>Student ID</th>
                       <th>Billing Date</th>
-                      <th>Fee Status</th>
+                      <th>Fee Status</th>                    
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -177,9 +210,9 @@ const Students = () => {
                        <td>
                          <div className=" mt-1">{student.roomNumber}</div>
                        </td>
-                       {/* <td>
-                         <div className=" mt-1">{student._id}</div>
-                       </td> */}
+                       <td>
+                       <div className=" mt-1">{student.userReferenceId} </div>
+                       </td>
                        <td>
                          <div className=" text-success  mt-1">Pending</div>
                        </td>
@@ -190,13 +223,15 @@ const Students = () => {
                          <div className="font-weight-bold  mt-1">
                          <button
                             type="button"
-                            className="btn btn-sm btn-primary"
+                            className="btn btn-sm border"
                             onClick={() => handleEditAction(student)}>
-                            edit actions
+                            <EditIcon/>
                           </button>
-                          <button  className="btn btn-sm btn-primary ml-4" onClick={() => handleViewAction(student)}>view</button>
+                          <button   className="btn btn-sm border ml-2" onClick={() => handleViewAction(student)}><VisibilityIcon/></button>
+                          <button className="btn btn-sm border ml-2" onClick={()=>handleDelete(student._id)}><DeleteIcon/></button>
                          </div>
                        </td>
+                       
                      </tr>
                     ))}
                   </tbody>

@@ -13,7 +13,7 @@ const PgStaff = () => {
   const [staffData,setStaffData]=useState([])
 
   const handleGuestsData = () => {
-    fetch(`/api/getallstaff`, {
+    fetch('/api/getallstaff', {
         method: 'GET', 
         headers: {
             "Content-Type": "application/json",
@@ -27,7 +27,7 @@ const PgStaff = () => {
         return response.json();
     })
     .then(data => {
-      console.log(data)
+    
       setStaffData(data)
     })
     .catch(error => {

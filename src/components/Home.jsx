@@ -32,6 +32,7 @@ const Home = () => {
   const userSize = sessionStorage.getItem("userSize");
   const navigate = useNavigate();
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [floors,setFloors]=useState([]);
 
   const [openWelcomeModal, setOpenWelcomeModal] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
@@ -286,6 +287,31 @@ const handleProceed = async () => {
   };
 
 
+  const floorData = () => {
+    fetch("/api/floors", {
+      method: 'GET', 
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}` 
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch floor data');
+      }
+      return response.json();
+    })
+    .then(data => {
+      setFloors(data);      
+    })
+    .catch(error => console.error('Error fetching floor data:', error));
+  };
+
+  useEffect(()=>{
+    floorData()
+  },[])
+
+
   return (
 
     <>
@@ -343,6 +369,10 @@ const handleProceed = async () => {
           </div>
         </div>
       </div>
+
+
+
+      {floors?.length>0 && floors?.map((floor)=>(
       <div className="row  mt-3">
         <div className="col-xl-3 d-flex grid-margin stretch-card">
           <div className="card">
@@ -352,8 +382,8 @@ const handleProceed = async () => {
                   <div className="col-lg-12">
                     <h5 className="card-title mb-3">Rooms</h5>
                   </div>
-                  <div className="col-lg-12">Avaliable - 6</div>
-                  <div className="col-lg-12">Occipied - 12</div>
+                  <div className="col-lg-12">Total Rooms - {floor.totalRooms}</div>
+                  {/* <div className="col-lg-12">Occipied - 12</div> */}
                 </div>
               </div>
             </div>
@@ -367,8 +397,8 @@ const handleProceed = async () => {
                   <div className="col-lg-12">
                     <h4 className="card-title mb-3">Beds</h4>
                   </div>
-                  <div className="col-lg-12">Avaliable - 30</div>
-                  <div className="col-lg-12">Occipied - 60</div>
+                  <div className="col-lg-12">Avaliable - {floor.availableBeds}</div>
+                  <div className="col-lg-12">Occipied - {floor.occupiedBeds}</div>
                 </div>
               </div>
             </div>
@@ -406,14 +436,16 @@ const handleProceed = async () => {
           </div>
         </div>
       </div>
+  ))}
+
+
       <UpcomingFeeList />
 
       <div>
         <Modal
           open={openWelcomeModal}
           aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+          aria-describedby="modal-modal-description" >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h4" component="h2">
               Welcome to BoarderBase
@@ -514,11 +546,11 @@ const handleProceed = async () => {
             <Button onClick={handleBack}>Back</Button>
           </Box>
         </Modal>
+
         <Modal
           open={showFreeSuccessModal}
           aria-labelledby="modal-free-success-title"
-          aria-describedby="modal-free-success-description"
-        >
+          aria-describedby="modal-free-success-description"  >
           <Box sx={style}>
             <Typography variant="h4" component="h2">
               Free Sign-in Successful!
