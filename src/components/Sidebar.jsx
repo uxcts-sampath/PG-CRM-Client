@@ -142,11 +142,15 @@ const Sidebar = () => {
                 </li>
 
                 <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    style={{cursor:'pointer'}} onClick={()=>navigate('upcomingfeelist')}
-                  >
+                  <a className="nav-link"
+                    style={{cursor:'pointer'}} onClick={()=>navigate('upcomingfeelist')}>
                     Upcoming Fee list
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link"
+                    style={{cursor:'pointer'}} onClick={()=>navigate('pgusers/payusers')} >
+                    Pay User Fee
                   </a>
                 </li>
               </ul>

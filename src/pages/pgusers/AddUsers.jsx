@@ -54,7 +54,9 @@ const AddUsers=()=> {
     billingDate: '',
     paymentType:'',
     amount: '',
-    billingAmount:''
+    billingAmount:'',
+    parentPhoneNumber:'',
+    parentEmail:'',
   });
 
 
@@ -194,7 +196,9 @@ const AddUsers=()=> {
         billingDate: userDataFromLocation.billingDate,
         paymentType:userDataFromLocation.paymentType,
         amount: userDataFromLocation.amount,
-        billingAmount:userDataFromLocation.billingAmount
+        billingAmount:userDataFromLocation.billingAmount,
+        parentEmail:userDataFromLocation.parentEmail,
+        parentPhoneNumber:userDataFromLocation.parentPhoneNumber
       });
   
       // Set rooms and beds data after fetching completes
@@ -219,6 +223,11 @@ const AddUsers=()=> {
       newErrors.mobile = 'Mobile Number is required';
     } else if (formData.mobile.length !== 10) {
       newErrors.mobile = 'Mobile Number must be exactly 10 digits';
+    }
+    if (!formData.parentPhoneNumber) {
+      newErrors.parentPhoneNumber = 'Mobile Number is required';
+    } else if (formData.mobile.length !== 10) {
+      newErrors.parentPhoneNumber = 'Mobile Number must be exactly 10 digits';
     }
     if (!formData.age) newErrors.age = "Age is required";
     if (!formData.aadharNumber) {
@@ -279,6 +288,8 @@ const AddUsers=()=> {
         paymentType:formData.paymentType,
         amount: parseInt(formData.amount),
         billingAmount:parseInt(formData.billingAmount),
+        parentPhoneNumber:parseInt(formData.parentPhoneNumber),
+        parentEmail:formData.parentEmail
       };
   
       let url = '/api/createhosteluser';
@@ -308,7 +319,7 @@ const AddUsers=()=> {
           // Update the selected bed status to 'occupied'
           const selectedRoom = floors.find(floor => floor._id === formData.floor)?.rooms.find(room => room._id === formData.room);
           const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === formData.bed);
-          if (selectedBed) {
+          if (selectedBed) { 
               selectedBed.status = 'occupied';
           }
   
@@ -447,20 +458,6 @@ return(
         helperText={errors.name}
       />
     </Grid>
-    <Grid item xs={12} sm={6}>
-      <TextField
-        required
-        id="fatherName" 
-        name="fatherName"
-        label="Father name"
-        fullWidth
-        autoComplete="off"
-        variant="standard"
-        value={formData.fatherName}
-        onChange={handleChange}error={Boolean(errors.fatherName)}
-        helperText={errors.fatherName}
-      />
-    </Grid>
     <Grid item  xs={12} sm={6}>
       <TextField
         required
@@ -489,6 +486,54 @@ return(
         helperText={errors.age}
       />
     </Grid>
+    <Grid item xs={12} sm={6}>
+      <TextField
+        required
+        id="fatherName" 
+        name="fatherName"
+        label="Father name"
+        fullWidth
+        autoComplete="off"
+        variant="standard"
+        value={formData.fatherName}
+        onChange={handleChange}error={Boolean(errors.fatherName)}
+        helperText={errors.fatherName}
+      />
+    </Grid>
+
+    <Grid item  xs={12} sm={6}>
+      <TextField
+        required
+        id="parentPhoneNumber"
+        name="parentPhoneNumber"
+        label="Parent Mobile Number"
+        fullWidth
+        autoComplete="off"
+        variant="standard"
+        value={formData.parentPhoneNumber}
+        onChange={handleChange}error={Boolean(errors.parentPhoneNumber)}
+        helperText={errors.parentPhoneNumber}
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6}>
+  <TextField
+    required
+    id="parentEmail"
+    name="parentEmail"
+    label="Enter Email"
+    fullWidth
+    autoComplete="parentEmail"
+    variant="standard"
+    type="email"  // Specifies that the input should be an email
+    value={formData.parentEmail}
+    onChange={handleChange}
+   
+  />
+</Grid>
+
+    
+  
     <Grid item xs={12} sm={6}>
     <TextField
             id="referredBy"

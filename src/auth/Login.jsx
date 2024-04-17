@@ -105,6 +105,8 @@ const Login = ({ onSignin }) => {
         sessionStorage.setItem("hideFreeOption",hideFreeOption)
 
         console.log('susdfsdjn',suspensionDate)
+        console.log('paymentPlan',paymentPlan)
+        console.log('hide free option',hideFreeOption)
 
       
 
@@ -202,7 +204,7 @@ const Login = ({ onSignin }) => {
                     </div>
                     <div className="text-center mt-4 font-weight-light">
                       Don't have an account?{" "}
-                      <a style={{cursor:"pointer"}} onClick={()=>navigate("/register")} className="text-primary">
+                      <a style={{cursor:'pointer'}} onClick={()=>navigate("/register")} className="text-primary">
                         Create
                       </a>
                     </div>

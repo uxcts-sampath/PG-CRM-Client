@@ -16,6 +16,7 @@ import AddUsers from './pgusers/AddUsers';
 import AddStaff from './pgstaff/AddStaff';
 import MemberShip from './MemberShip';
 import CalendarPage from './CalendarPage';
+import PayUser from './pgusers/PayUsers';
 
 const Dashboard = () => {
   const routes = [
@@ -31,7 +32,8 @@ const Dashboard = () => {
     {path:'expenses',element:<Expenses/>},
     {path:'pgusers/addusers',element:<AddUsers/>},
     {path:'pgstaff/addstaff', element:<AddStaff/>},
-    {path:'calender', element:<CalendarPage/>}
+    {path:'calender', element:<CalendarPage/>},
+    {path:'pgusers/payusers', element:<PayUser/>}
   ];
 
   const element = useRoutes(routes);
