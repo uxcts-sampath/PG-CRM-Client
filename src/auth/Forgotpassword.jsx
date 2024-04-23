@@ -4,13 +4,14 @@ import logoWt from "/images/logo-wt.png";
 
 const Forgotpassword = () => {
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/forgotpassword", {
+      const response = await fetch(`${apiUrl}/api/forgotpassword`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

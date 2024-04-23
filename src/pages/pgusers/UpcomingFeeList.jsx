@@ -6,12 +6,14 @@ import userprofileImage from "/theme/images/faces/face29.png";
 const UpcomingFeeList = () => {
 
   const token = sessionStorage.getItem('token');
+  const apiUrl = process.env.REACT_APP_API_URL;
+
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [feeList, setFeeList] = useState([]);
   
   const handleFeeList = (selectedDate) => {
-    fetch(`/api/hostelalluser?date=${selectedDate.toISOString().split('T')[0]}`, { // Pass selectedDate in the query parameter
+    fetch(`${apiUrl}/api/hostelalluser?date=${selectedDate.toISOString().split('T')[0]}`, { // Pass selectedDate in the query parameter
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",

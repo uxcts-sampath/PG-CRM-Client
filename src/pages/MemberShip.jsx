@@ -4,12 +4,13 @@ import userprofileImage from "/theme/images/faces/face29.png";
 const MemberShip = () => {
 
   const token = sessionStorage.getItem('token');
+  const apiUrl = process.env.REACT_APP_API_URL;
   const userId = sessionStorage.getItem("userId")
   const [membershipData, setMembershipData] = useState([]);
 
 
   const MembershipData = () => {
-    fetch(`/api/payment/${userId}`, {
+    fetch(`${apiUrl}/api/payment/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import logoWt from "/images/logo-wt.png";
 
 const ResetPassword = () => {
     const navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_API_URL;
     const { userId, token } = useParams();
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -24,7 +25,7 @@ const ResetPassword = () => {
                 throw new Error("Password must be at least 8 characters long.");
             }
     
-            const response = await fetch('/api/resetpassword', {
+            const response = await fetch(`${apiUrl}/api/resetpassword`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

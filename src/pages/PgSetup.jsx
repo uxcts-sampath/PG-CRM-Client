@@ -17,6 +17,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 
 
   const Pgsetup = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
   const [floorNumber, setFloorNumber] = useState("");
   const [commonWashroomCount, setCommonWashroomCount] = useState("");
   const [floorName,setFloorName]=useState("");
@@ -84,7 +85,7 @@ const handleSubmit = async () => {
   };
 
   try {
-    const response = await fetch("/api/floor", {
+    const response = await fetch(`${apiUrl}/api/floor`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -144,7 +145,7 @@ const handleSubmit = async () => {
     };
   
     try {
-      const response = await fetch('/api/room', {
+      const response = await fetch(`${apiUrl}/api/room`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +173,7 @@ const handleSubmit = async () => {
 
   // Getting Floor Data
   const floorData = () => {
-    fetch("/api/floors", {
+    fetch(`${apiUrl}/api/floors`, {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",
@@ -196,7 +197,7 @@ const handleSubmit = async () => {
   // Update handleFloorDelete function in Pgsetup component
 const handleFloorDelete = async (floorId) => {
   try {
-    const response = await fetch(`/api/floors/${floorId}`, {
+    const response = await fetch(`${apiUrl}/api/floors/${floorId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -237,7 +238,7 @@ const handleBedTypeChange = (event) => {
 // Define an asynchronous function to handle room deletion
 const handleRoomDelete = async (roomId) => {
   try {
-    const response = await fetch(`/api/room/${roomId}`, {
+    const response = await fetch(`${apiUrl}/api/room/${roomId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -272,10 +273,10 @@ const handleSubmitPrice = async () => {
 
     // Determine whether to perform POST or PUT based on hasPosted state
     if (hasPosted) {
-      endpoint = `/api/updateprice/${userId}`;
+      endpoint = `${apiUrl}/api/updateprice/${userId}`;
       method = 'PUT';
     } else {
-      endpoint = '/api/createprice';
+      endpoint = `${apiUrl}/api/createprice`;
       method = 'POST';
     }
 
@@ -311,7 +312,7 @@ const handleSubmitPrice = async () => {
 
 
 const handlePriceGet = () => {
-  fetch("/api/getprice", {
+  fetch(`${apiUrl}/api/getprice`, {
     method: 'GET', 
     headers: {
       "Content-Type": "application/json",

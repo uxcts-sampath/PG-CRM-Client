@@ -14,6 +14,7 @@ import Select from '@mui/material/Select';
 const AddUsers=()=> {
   const token = sessionStorage.getItem('token');
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
   const location = useLocation();
   const [userData, setUserData] = useState(null);
 
@@ -292,12 +293,12 @@ const AddUsers=()=> {
         parentEmail:formData.parentEmail
       };
   
-      let url = '/api/createhosteluser';
+      let url = `${apiUrl}/api/createhosteluser`;
       let method = 'POST';
   
       if (location.state && location.state.user) {
         // If user data is available, it's an update operation
-        url = `/api/updatehosteluser/${formData.hostelUserId}`;
+        url = `${apiUrl}/api/updatehosteluser/${formData.hostelUserId}`;
         method = 'PUT';
       }
   
@@ -345,7 +346,7 @@ const AddUsers=()=> {
  
 
   const floorData = () => {
-    fetch('/api/floors', {
+    fetch(`${apiUrl}/api/floors`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -367,7 +368,7 @@ const AddUsers=()=> {
 
 
   const handlePriceGet = () => {
-    fetch("/api/getprice", {
+    fetch(`${apiUrl}/api/getprice`, {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",

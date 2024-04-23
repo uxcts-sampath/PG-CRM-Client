@@ -4,6 +4,7 @@ import { TextField, Select, MenuItem, Grid, Button } from '@mui/material';
 
 const AddStaff=()=> {
     const navigate=useNavigate()
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     const [errors, setErrors] = useState({});
 
@@ -67,7 +68,7 @@ const AddStaff=()=> {
           return;
         }
         try {
-            const response = await fetch("/api/createstaff", {
+            const response = await fetch(`${apiUrl}/api/createstaff`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

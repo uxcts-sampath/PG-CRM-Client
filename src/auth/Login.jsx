@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const Login = ({ onSignin }) => {
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
   const { signin } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -38,6 +39,8 @@ const Login = ({ onSignin }) => {
     }
   }, []);
 
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -56,7 +59,7 @@ const Login = ({ onSignin }) => {
   
     try {
       // Send login data to the backend for validation
-      const response = await fetch("api/signin", {
+      const response = await fetch(`${apiUrl}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -7,6 +7,8 @@ const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
   const [events, setEvents] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
+
 
   useEffect(() => {
     // Fetch events from the backend
@@ -15,7 +17,7 @@ const CalendarPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("/api/events");
+      const response = await fetch(`${apiUrl}/api/events`);
       if (response.ok) {
         const data = await response.json();
         setEvents(data);

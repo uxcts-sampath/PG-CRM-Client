@@ -26,6 +26,7 @@ const style = {
 
 
 const Home = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("userId");
   const userName = sessionStorage.getItem("userName");
@@ -196,7 +197,7 @@ const handleProceed = async () => {
         sessionStorage.setItem("lastFreeSignInDate", new Date().toISOString());
         setShowFreeSuccessModal(true);
 
-        const response = await fetch("/api/payment", {
+        const response = await fetch(`${apiUrl}/api/payment`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -217,7 +218,7 @@ const handleProceed = async () => {
         // Generate transactionId here or fetch it from the server
         const transactionId = generateTransactionId(); // Generate the transaction ID
 
-        const response = await fetch("/api/payment", {
+        const response = await fetch(`${apiUrl}/api/payment`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -288,7 +289,7 @@ const handleProceed = async () => {
 
 
   const floorData = () => {
-    fetch("/api/floors", {
+    fetch(`${apiUrl}/api/floors`, {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",

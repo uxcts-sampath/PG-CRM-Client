@@ -13,6 +13,7 @@ import userprofileImage from "/theme/images/faces/face29.png";
 const Students = () => {
 
   const token = sessionStorage.getItem("token");
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [studentData, setStudentData] = useState([]);
   const [roomDetailsFetched, setRoomDetailsFetched] = useState(false); 
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const Students = () => {
   };
 
   const handleStudentData = () => {
-    fetch("/api/students", {
+    fetch(`${apiUrl}/api/students`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +63,7 @@ const Students = () => {
 
   const handleDelete = async (studentId) => {
     try {
-      const response = await fetch(`/api/hosteluser/${studentId}`, {
+      const response = await fetch(`${apiUrl}/api/hosteluser/${studentId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ const Students = () => {
   }, [studentData, roomDetailsFetched]); // Make sure studentData and roomDetailsFetched are included as dependencies
 
   const fetchRoomDetails = (roomId, studentId) => {
-    fetch(`/api/room/${roomId}`, {
+    fetch(`${apiUrl}/api/room/${roomId}`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",

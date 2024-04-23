@@ -11,6 +11,7 @@ import userprofileImage from "/theme/images/faces/face29.png";
 const Guests = () => {
 
   const token = sessionStorage.getItem("token");
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [guestData, setGuestData] = useState([]);
   const [roomDetailsFetched, setRoomDetailsFetched] = useState(false);
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Guests = () => {
   
 
   const handleGuestsData = () => {
-    fetch("/api/guests", {
+    fetch(`${apiUrl}/api/guests`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,7 @@ const Guests = () => {
   }, [guestData, roomDetailsFetched]);
 
   const fetchRoomDetails = (roomId, guestId) => {
-    fetch(`/api/room/${roomId}`, {
+    fetch(`${apiUrl}/api/room/${roomId}`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +98,7 @@ const Guests = () => {
 
   const handleDelete = async (guestId) => {
     try {
-      const response = await fetch(`/api/hosteluser/${guestId}`, {
+      const response = await fetch(`${apiUrl}/api/hosteluser/${guestId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

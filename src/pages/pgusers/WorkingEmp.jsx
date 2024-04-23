@@ -12,6 +12,7 @@ import userprofileImage from "/theme/images/faces/face29.png";
 const WorkingEmp = () => {
 
   const token = sessionStorage.getItem("token");
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [workingEmpData, setWorkingEmpData] = useState([]);
   const [roomDetailsFetched, setRoomDetailsFetched] = useState(false); 
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const WorkingEmp = () => {
   
 
   const handleWorkingEmpData = () => {
-    fetch("/api/working-emp", {
+    fetch(`${apiUrl}/api/working-emp`, {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +72,7 @@ useEffect(() => {
 
 
 const fetchRoomDetails = (roomId, workingEmpId) => {
-  fetch(`/api/room/${roomId}`, {
+  fetch(`${apiUrl}/api/room/${roomId}`, {
     method: 'GET',
     headers: {
       "Content-Type": "application/json",
@@ -103,7 +104,7 @@ const fetchRoomDetails = (roomId, workingEmpId) => {
 
 const handleDelete = async (workingEmpId) => {
   try {
-    const response = await fetch(`/api/hosteluser/${workingEmpId}`, {
+    const response = await fetch(`${apiUrl}/api/hosteluser/${workingEmpId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

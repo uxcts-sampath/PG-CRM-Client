@@ -3,6 +3,9 @@ import userprofileImage from "/theme/images/faces/face29.png";
 
 const Profile = () => {
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+
   const token = sessionStorage.getItem("token")
   const userId = sessionStorage.getItem("userId")
 
@@ -11,7 +14,7 @@ const Profile = () => {
 
 
   const userDetails = () => {
-    fetch(`/api/user/${userId}`, {
+    fetch(`${apiUrl}/api/user/${userId}`, {
       method: 'GET', 
       headers: {
         "Content-Type": "application/json",

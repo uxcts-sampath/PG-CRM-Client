@@ -24,6 +24,7 @@ const Register = () => {
   // Your imports and other code here...
 
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [step3Options, setStep3Options] = useState([]);
@@ -217,7 +218,7 @@ const handleStepChange = (nextStep) => {
       };
   
       // Send data to the backend using fetch
-      const response = await fetch("api/signup", {
+      const response = await fetch(`${apiUrl}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
