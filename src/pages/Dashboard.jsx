@@ -7,7 +7,6 @@ import Home from '../components/Home';
 import PgSetup from './PgSetup';
 import PgUsers from './pgusers/PgUsers';
 import Profile from '../components/Profile';
-import Department from './department';
 import UpcomingFeeList from './pgusers/UpcomingFeeList';
 import PgStaff from './pgstaff/pgStaff'
 import Income from '../pages/finance/Income';
@@ -17,6 +16,11 @@ import AddStaff from './pgstaff/AddStaff';
 import MemberShip from './MemberShip';
 import CalendarPage from './CalendarPage';
 import PayUser from './pgusers/PayUsers';
+import RollManage from './pgstaff/RollManage';
+import Salary from './pgstaff/Salary';
+import StaffTimesheet from './attendance/StaffTimesheet';
+import Help from './help/Help';
+import Settings from '../Settings';
 
 const Dashboard = () => {
   const routes = [
@@ -25,7 +29,6 @@ const Dashboard = () => {
     {path:'pgusers', element:<PgUsers/>},
     {path:'profile',element:<Profile/>},
     {path:'membership', element:<MemberShip/>},
-    {path:'department',element:<Department/>},
     {path:'upcomingfeelist',element:<UpcomingFeeList/>},
     {path:'pgstaff', element:<PgStaff/>},
     {path:'incomes',element:<Income/>},
@@ -33,7 +36,15 @@ const Dashboard = () => {
     {path:'pgusers/addusers',element:<AddUsers/>},
     {path:'pgstaff/addstaff', element:<AddStaff/>},
     {path:'calender', element:<CalendarPage/>},
-    {path:'pgusers/payusers', element:<PayUser/>}
+    {path:'pgusers/payusers', element:<PayUser/>},
+    {path:'pgstaff/rollmanagement', element:<RollManage/>},
+    {path:'pgstaff/salary', element:<Salary/>},
+    {path:'staffattendance', element:<StaffTimesheet/>},
+    {path:'help', element:<Help/>},
+    {path:'settings', element:<Settings/>}
+
+
+
   ];
 
   const element = useRoutes(routes);

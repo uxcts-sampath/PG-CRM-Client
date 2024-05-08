@@ -1,6 +1,7 @@
-import React from "react";
+import React,{useEffect} from "react";
 import {  useNavigate } from "react-router-dom";
 import logoWt from "/images/logo-wt.png";
+
 
 const Navbar = () => {
 
@@ -9,6 +10,10 @@ const Navbar = () => {
   const token = sessionStorage.getItem("token");
 
   const userName=sessionStorage.getItem("userName")
+
+
+
+
   const handleLogout = () => {
     // Clear the token from sessionStorage
     sessionStorage.removeItem("token");
@@ -17,49 +22,56 @@ const Navbar = () => {
     navigate("/");
   };
   
-  // const handleSignOut=()=>{
-  //   navigate('/')
-  // }
+  
+
+
+  useEffect(() => {
+    const minimizeButton = document.querySelector('[data-toggle="minimize"]');
+    if (minimizeButton) {
+      minimizeButton.addEventListener("click", toggleSidebar);
+      return () => {
+        minimizeButton.removeEventListener("click", toggleSidebar);
+      };
+    }
+  }, []);
+  
+
+  const toggleSidebar = () => {
+    document.body.classList.toggle('sidebar-icon-only');
+  };
+  
+
+  
 
   return (
     <>
       <nav className="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-        <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-          <a className="navbar-brand brand-logo" href="index.html">
-            <img src={logoWt} alt="logo" />
-          </a>
-          <a className="navbar-brand brand-logo-mini" href="index.html">
+      <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+      <a className="navbar-brand brand-logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/home')}>
             <img src={logoWt} alt="logo" />
           </a>
           <button
-            className="navbar-toggler navbar-toggler align-self-center d-none d-lg-flex"
-            type="button"
-            data-toggle="minimize"
-          >
-            <span className="typcn typcn-th-menu"></span>
-          </button>
+  className="navbar-toggler navbar-toggler align-self-center d-none d-lg-flex"
+  type="button"
+  onClick={toggleSidebar}>
+
+  <span className="typcn typcn-th-menu"></span>
+</button>
+
         </div>
         <div className="navbar-menu-wrapper d-flex align-items-center justify-content-end">
           <ul className="navbar-nav mr-lg-2">
             <li className="nav-item  d-none d-lg-flex">
-              <a className="nav-link"  onClick={()=>navigate('calender')}>
+              <a className="nav-link" style={{cursor:'pointer'}}  onClick={()=>navigate('calender')}>
                 Calendar
               </a>
             </li>
-            {/* <li className="nav-item  d-none d-lg-flex">
-              <a className="nav-link active" href="#">
-                Statistic
-              </a>
-            </li>
-            <li className="nav-item  d-none d-lg-flex">
-              <a className="nav-link" href="#">
-                PG Staff
-              </a>
-            </li> */}
           </ul>
           <ul className="navbar-nav navbar-nav-right">
             <li className="nav-item d-none d-lg-flex  mr-2">
-              <a className="nav-link" href="#">
+              <a className="nav-link" 
+              onClick={()=>navigate('help')}
+              style={{cursor:'pointer'}}>
                 Help
               </a>
             </li>
@@ -212,11 +224,12 @@ const Navbar = () => {
                 className="dropdown-menu dropdown-menu-right navbar-dropdown"
                 aria-labelledby="profileDropdown"
               >
-                <a className="dropdown-item">
-                  <i className="typcn typcn-cog text-primary"></i>
+                <a className="dropdown-item" style={{cursor:'pointer'}}  onClick={()=>navigate('settings')}>
+                  <i className="typcn typcn-cog text-primary"
+               ></i>
                   Settings
                 </a>
-                <a className="dropdown-item" onClick={handleLogout}>
+                <a className="dropdown-item" style={{cursor:'pointer'}} onClick={handleLogout}>
                   <i className="typcn typcn-power text-primary"></i>
                   Logout
                 </a>

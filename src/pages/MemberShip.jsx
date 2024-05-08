@@ -24,22 +24,17 @@ const MemberShip = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("About to set membershipData with:", data.data);
         setMembershipData(data.data);
       })
       
       .catch((error) => console.error('Error fetching membership data:', error));
   };
 
-  console.log(membershipData)
-
   useEffect(()=>{
     MembershipData()
   },[])
 
   console.log('dfdv',membershipData);
-
-  console.log("Rendering membershipData:", membershipData);
   
   
 
@@ -56,7 +51,7 @@ const MemberShip = () => {
           <div className="card ">
             <div className="card-body ml-4">
               <h1>Membership</h1>
-              <p>Plan Details</p>
+              <p>Plan Details:{membershipData.paymentPlan}</p>
               <div className="row">
                 <div className="col-lg-9 border border-light">
                   <div className="mt-3">
@@ -98,7 +93,7 @@ const MemberShip = () => {
                       <td>
                         <div className="d-flex">
                           <div>
-                            <div className=" mt-2"></div>
+                            <div className=" mt-2">{membershipData.selectedDate}</div>
                           </div>
                         </div>
                       </td>
@@ -112,10 +107,10 @@ const MemberShip = () => {
                         <div className=" mt-1"></div>
                       </td>
                       <td>
-                        <div className=" mt-1"></div>
+                        <div className=" mt-1">{membershipData.subtotal}</div>
                       </td>
                       <td>
-                        <div className=" mt-1"></div>
+                        <div className=" mt-1">{membershipData.total}</div>
                       </td>
                     </tr>
                   </tbody>

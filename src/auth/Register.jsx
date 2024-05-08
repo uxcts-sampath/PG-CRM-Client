@@ -134,7 +134,7 @@ const handleInputChange = (e, stepNumber) => {
       isValid = false;
     }
         if (!step1Data.password) {
-            currentErrors.password = "Password Name is required";
+            currentErrors.password = "Password is required";
             isValid = false;
         }
         else if (step1Data.password.length < 8) {

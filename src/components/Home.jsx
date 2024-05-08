@@ -363,6 +363,7 @@ const handleProceed = async () => {
               <button
                 type="button"
                 className="btn btn-sm bg-white btn-icon-text border"
+                onClick={()=>navigate('profile')}
               >
                 <i className="typcn typcn-info-large-outline mr-2"></i>info
               </button>

@@ -296,6 +296,8 @@ const handleSubmitPrice = async () => {
 
     console.log('Price updated successfully');
 
+    handlePriceGet()
+
     // Set hasPosted to true after successful POST
     if (!hasPosted) {
       setHasPosted(true);
@@ -308,6 +310,7 @@ const handleSubmitPrice = async () => {
     // Handle error appropriately, such as showing a notification to the user
   }
 };
+
 
 
 
@@ -342,7 +345,7 @@ const handlePriceGet = () => {
 
 
 
-  
+   
 useEffect(()=>{
   floorData()
   handlePriceGet()

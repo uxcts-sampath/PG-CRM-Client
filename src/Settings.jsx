@@ -1,10 +1,10 @@
 import React from "react";
 
-const Salary=()=>{
+const Settings=()=>{
     return(
         <div>
             <h1>Under development</h1>
         </div>
     )
 }
-export default Salary
+export default Settings

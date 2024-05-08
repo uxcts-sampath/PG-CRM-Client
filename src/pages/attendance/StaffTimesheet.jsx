@@ -1,7 +1,9 @@
 import React from "react";
 
 const StaffTimesheet = () => {
-  return <div>Staff Time Sheet</div>;
+  return <div>
+    <h1>Under development</h1>
+  </div>;
 };
 
 export default StaffTimesheet;

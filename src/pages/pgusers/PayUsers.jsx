@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 
 const PayUsers = () => {
     const token = sessionStorage.getItem('token');
-
-    const navigate=useNavigate()
     const apiUrl = process.env.REACT_APP_API_URL;
 
-
-
+    const navigate = useNavigate();
     const [userReferenceId, setUserReferenceId] = useState('');
     const [userDetails, setUserDetails] = useState(null);
     const [error, setError] = useState(null);
-
     const [billingDate, setBillingDate] = useState('');
-    const [billingCycle,setBillingCycle]=useState('');
-    const [paymentType, setPaymentType] = useState('advance');
-    const [amountPaid, setAmountPaid] = useState('');
-    const [customAmount, setCustomAmount] = useState(0); 
-    const [payableAmount, setPayableAmount] = useState(0); // Added payableAmount state
-    const [paymentStatus, setPaymentStatus] = useState('');
-    const [pendingAmount,setPendingAmount]=useState('')
+    const [payableAmount, setPayableAmount] = useState(0);
+    const [pendingAmount, setPendingAmount] = useState(0);
+    const [customAmount, setCustomAmount] = useState(0);
     const [subTotal, setSubTotal] = useState(0);
     const [total, setTotal] = useState(0);
-    
+    const [paymentHistory,setPaymentHistory]=useState("");
+    const [payment,setPayment]=useState("");
 
     useEffect(() => {
         if (userReferenceId) {
@@ -32,149 +24,125 @@ const PayUsers = () => {
         }
     }, [userReferenceId]);
 
+
+    useEffect(() => {
+        setBillingDate(new Date().toISOString().split('T')[0]); // Set billingDate to today's date
+    }, []);
+
     const handleUserReferenceIdChange = (event) => {
         setUserReferenceId(event.target.value);
     };
 
     useEffect(() => {
-        const calculatedSubTotal = Number(payableAmount) + Number(pendingAmount);
+        const calculatedSubTotal = parseFloat(payableAmount) + parseFloat(pendingAmount);
         setSubTotal(calculatedSubTotal);
         let calculatedTotal = calculatedSubTotal;
-    
-        if (paymentType !== 'pendingAmount') {
-            calculatedTotal = customAmount > 0 ? customAmount : calculatedSubTotal;
+
+        if (parseFloat(customAmount) > 0) {
+            calculatedTotal = parseFloat(customAmount);
         }
+
         setTotal(calculatedTotal);
-    }, [payableAmount, pendingAmount, customAmount, paymentType]);
-
-
-    useEffect(() => {
-        // Update amountPaid based on paymentType
-        let updatedAmountPaid = 0;
-        if (paymentType === 'fullPayment') {
-            updatedAmountPaid = Number(payableAmount) + Number(pendingAmount);
-        } else if (paymentType === 'pendingAmount') {
-            updatedAmountPaid = Number(pendingAmount);
-        }
-        setAmountPaid(updatedAmountPaid.toString()); // Convert back to string for input field
-    }, [paymentType, payableAmount, pendingAmount]);
-    
-
+    }, [payableAmount, pendingAmount, customAmount]);
 
     const fetchUserDetails = () => {
         fetch(`${apiUrl}/api/paymentdetails/${userReferenceId}`, {
             method: 'GET',
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Check if data is empty or null
-            if (!data) {
-                throw new Error('User details not found');
-            }
-            setUserDetails(data);
-            setPayableAmount(data.amount);
-            const latestPayment = data.paymentHistory[data.paymentHistory.length - 1]; // Get the latest payment
-            setPendingAmount(latestPayment.pendingAmount); // Set pendingAmount from the latest payment
-            setError(null);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Update error state only if there's a network-related error
-            if (error.message === 'Network response was not ok') {
-                setError('Failed to fetch user details');
-            }
-        });
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setUserDetails(data);
+    
+                const currentDate = new Date().toISOString();
+                const billingDate = new Date(data.billingDate).toISOString();
+                const endDate = new Date(data.endDate).toISOString();
+    
+                if (currentDate < endDate) {
+                    if (currentDate === billingDate) {
+                        // Display payableAmount only if it's the billing date
+                        setPayableAmount(data.amount);
+                        setPendingAmount(data.paymentHistory[data.paymentHistory.length - 1].outstanding);
+                    } else {
+                        // Display pendingAmount if it's not the billing date
+                        setPendingAmount(data.paymentHistory[data.paymentHistory.length - 1].outstanding);
+                    }
+                } else {
+                    // After endDate, display both payableAmount and pendingAmount
+                    setPayableAmount(data.amount);
+                    setPendingAmount(data.paymentHistory[data.paymentHistory.length - 1].outstanding);
+                }
+    
+                setPaymentHistory(data.paymentHistory);
+                setError(null);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                setError(error.message);
+            });
     };
     
 
-    // const handleUpdatePayment = () => {
-    //     const updatedPaymentDetails = {
-    //         userReferenceId: userReferenceId,
-    //         paymentDetails: {
-    //             billingDate: billingDate,
-    //             paymentType: paymentType,
-    //             amountPaid: amountPaid,
-    //             paymentStatus: paymentStatus,
-    //             customAmount: customAmount,
-    //             subTotal: subTotal,
-    //             total: total
-    //         }
-    //     };
-
-    //     fetch(`/api/process-payment`, {
-    //         method: 'POST',
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             Authorization: `Bearer ${token}`
-    //         },
-    //         body: JSON.stringify(updatedPaymentDetails)
-    //     })
-    //     .then(response => {
-    //         if (!response.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         return response.json();
-    //     })
-    //     .then(data => {
-    //         console.log('Payment details updated successfully:', data);
-    //         navigate('/home/pgusers')
-    //     })
-    //     .catch(error => {
-    //         console.error('Error:', error);
-    //         setError('Failed to update payment details');
-    //     });
-    // };
 
     const handleUpdatePayment = () => {
+        setError(null);
+
+        const parsedPayableAmount = parseFloat(payableAmount);
+        const parsedPendingAmount = parseFloat(pendingAmount);
+        const parsedCustomAmount = parseFloat(customAmount);
+
+        let updatedTotal = 0;
+
+        if (parseFloat(customAmount) > 0) {
+            updatedTotal = parseFloat(customAmount);
+        } else {
+            updatedTotal = parsedPayableAmount + parsedPendingAmount;
+        }
+
         const updatedPaymentDetails = {
             userReferenceId: userReferenceId,
             paymentDetails: {
                 billingDate: billingDate,
-                billingCycle: billingCycle,
-                paymentType: paymentType,
-                amountPaid: parseFloat(amountPaid), // Convert to number
-                paymentStatus: paymentStatus,
-                customAmount: parseFloat(customAmount), // Convert to number
-                subTotal: parseFloat(subTotal), // Convert to number
-                total: parseFloat(total) // Convert to number
-            }
+                payment: 'cash', // Assuming payment method is always 'cash' for now
+                pendingAmount: parsedPendingAmount,
+                payableAmount: parsedPayableAmount,
+                subTotal: subTotal,
+                customAmount: parsedCustomAmount,
+                total: updatedTotal,
+            },
         };
-    
-        fetch(`${apiUrl}/api/process-payment`, {
+
+        fetch(`${apiUrl}/api/processPayment`, {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(updatedPaymentDetails)
+            body: JSON.stringify(updatedPaymentDetails),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Payment details updated successfully:', data);
-            navigate('/home/pgusers');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            setError('Failed to update payment details');
-        });
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to update payment details');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log('Payment details updated successfully:', data);
+                navigate('/home/pgusers');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                setError(error.message);
+            });
     };
-    
-     
-
 
     return (
         <div>
@@ -194,103 +162,97 @@ const PayUsers = () => {
             )}
 
             <div>
-                
-
-                <div>
+            <div>
                     <label htmlFor="billingDate">Billing Date:</label>
                     <input
                         type="date"
                         id="billingDate"
                         value={billingDate}
-                        onChange={(e) => setBillingDate(e.target.value)}/>
-                </div>
-
-                <div>
-                    <label htmlFor="billingCycle">Billing Cycle :</label>
-                    <select
-                        id="billingCycle"
-                        value={billingCycle}
-                        onChange={(e) => setBillingCycle(e.target.value)}  >
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="pendingAmount">Pending Amount</option>
-
-                    </select>
-                </div>
-
-                <div>
-                    <label htmlFor="paymentType">Payment Type:</label>
-                    <select
-                        id="paymentType"
-                        value={paymentType}
-                        onChange={(e) => setPaymentType(e.target.value)}  >
-                        <option value="advance">Advance</option>
-                        <option value="fullPayment">Full Payment</option>
-                        <option value="pendingAmount">Pending Amount</option>
-
-                    </select>
-                </div>
-
-
-                <div>
-                    <label htmlFor="payableAmount">Payable Amount:</label> 
-                    <input
-                        type="text"
-                        id="payableAmount"
-                        value={payableAmount}
-                        onChange={(e) => setPayableAmount(e.target.value)}
+                        onChange={(e) => setBillingDate(e.target.value)}
+                        disabled // Disable the input field
                     />
                 </div>
 
-
                 <div>
-            <label htmlFor="pendingAmount">Pending Amount:</label> 
-            <input
-                type="text"
-                id="pendingAmount"
-                value={pendingAmount}
-            />
-        </div>
-
-                
-                
-    
-
-                <div>
-    <label htmlFor="paymentStatus">Payment Status:</label>
+    <label htmlFor="paymentMethod">Payment Method:</label>
     <select
-        id="paymentStatus"
-        value={paymentStatus}
-        onChange={(e) => setPaymentStatus(e.target.value)}
+        id="paymentMethod"
+        value="paymentType" // Default value set to 'cash'
+        onChange={(e) => setPayment(e.target.value)} // Update the payment state
     >
-        <option value="paid">Paid</option>
-        <option value="pending">Pending</option>
+        <option value="paymentType" disabled>Payment Type</option>
+        <option value="cash">Cash</option>
+        <option value="online">Online</option>
     </select>
 </div>
 
-            <div>
-                    <label htmlFor="customAmount">Custom Amount:</label>
+
+                <div>
+                    <label htmlFor="payableAmount">Payable Amount:</label>
                     <input
-                        type="text"
-                        id="customAmount"
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
+    type="number"
+    id="payableAmount"
+    value={payableAmount}
+    onChange={(e) => {
+        const value = e.target.value;
+        setPayableAmount(value);
+    }}
+    onBlur={(e) => {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value)) {
+            setPayableAmount(value.toString());
+        } else {
+            setPayableAmount('');
+        }
+    }}
+/>
+</div>
+
+
+            <div>           
+                    <label htmlFor="pendingAmount">Outstanding Amount:</label>
+                    <input
+                        type="number"
+                        id="pendingAmount"
+                        value={pendingAmount}
+                        onChange={(e) => setPendingAmount(e.target.value)}
+                    />
+                </div>
+
+
+                <div>
+                    <label htmlFor="subTotal">Sub Total:</label>
+                    <input
+                        type="number"
+                        id="subTotal"
+                        value={subTotal}
+                        onChange={(e) => setSubTotal(e.target.value)}
                     />
                 </div>
 
                 <div>
-                    <p>Sub Total: {subTotal}</p>
-                    <p>Total: {total}</p>
-                </div>
-                <div>
-    <label htmlFor="amountPaid">Amount Paid:</label>
+    <label htmlFor="customAmount">Custom Amount/Paying Amount * : </label>
     <input
-        type="text"
-        id="amountPaid"
-        value={amountPaid} // Bind amountPaid to total
-        onChange={(e) => setAmountPaid(e.target.value)}
+        required // Add the required attribute
+        type="number"
+        id="customAmount"
+        value={customAmount}
+        onChange={(e) => setCustomAmount(e.target.value)}
     />
 </div>
+
+
+               
+
+                <div>
+                    <label htmlFor="total">Total:</label>
+                    <input
+                        type="number"
+                        id="total"
+                        value={total}
+                        onChange={(e) => setTotal(e.target.value)}
+                    />
+                </div>
 
                 <button onClick={handleUpdatePayment}>Pay Bill</button>
             </div>

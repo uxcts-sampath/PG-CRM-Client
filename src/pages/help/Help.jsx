@@ -1,7 +1,9 @@
 import React from "react";
 
 const Help = () => {
-  return <div>Help Content Here</div>;
+  return <div>
+    <h1>Under development</h1>
+  </div>;
 };
 
 export default Help;

@@ -75,7 +75,7 @@ const UpcomingFeeList = () => {
                   </div>
                 </div>
                 <div className="mr-3" style={{ cursor: 'pointer' }}>
-      <span>Select Date</span>
+      <span>Select Date </span>
       <DatePicker
         selected={selectedDate}
         onChange={(date) => setSelectedDate(date)}

@@ -71,7 +71,6 @@ const Sidebar = () => {
               <i className="typcn typcn-device-desktop menu-icon"></i>
               <span className="menu-title" >
                 Dashboard
-                {/* <span className="badge badge-primary ml-3">New</span> */}
               </span>
             </a>
           </li>
@@ -109,15 +108,7 @@ const Sidebar = () => {
                     Membership
                   </a>
                 </li>
-                <li className="nav-item">
-                  {" "}
-                  <a
-                    className="nav-link"
-                    style={{cursor:'pointer'}} onClick={()=>navigate('department')}
-                  >
-                   Department
-                  </a>
-                </li>
+               
               </ul>
             </div>
           </li>
@@ -149,7 +140,7 @@ const Sidebar = () => {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link"
-                    style={{cursor:'pointer'}} onClick={()=>navigate('pgusers/payusers')} >
+                    style={{cursor:'pointer'}} onClick={()=>navigate('pgusers/payusers')}>
                     Pay User Fee
                   </a>
                 </li>
@@ -157,13 +148,11 @@ const Sidebar = () => {
             </div>
           </li>
           <li className="nav-item">
-            <a
-              className="nav-link"
+            <a className="nav-link"
               data-toggle="collapse"
               href="#staff"
               aria-expanded="false"
-              aria-controls="form-elements"
-            >
+              aria-controls="form-elements">
               <i className="typcn typcn-film menu-icon"></i>
               <span className="menu-title">PG Staff</span>
               <i className="menu-arrow"></i>
@@ -173,16 +162,14 @@ const Sidebar = () => {
                 <li className="nav-item">
                   <a
                     className="nav-link"
-                    style={{cursor:'pointer'}}  onClick={()=>navigate('pgstaff')}
-                  >
+                    style={{cursor:'pointer'}}  onClick={()=>navigate('pgstaff')}>
                     Staff
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="pages/forms/basic_elements.html"
-                  >
+                  <a className="nav-link"
+                    onClick={()=>navigate('pgstaff/rollmanagement')}
+                    style={{cursor:'pointer'}}>
                     Roll Managment
                   </a>
                 </li>
@@ -190,8 +177,8 @@ const Sidebar = () => {
                 <li className="nav-item">
                   <a
                     className="nav-link"
-                    href="pages/forms/basic_elements.html"
-                  >
+                   onClick={()=>navigate('pgstaff/salary')}
+                   style={{cursor:'pointer'}}>
                     Salary
                   </a>
                 </li>
@@ -204,8 +191,7 @@ const Sidebar = () => {
               data-toggle="collapse"
               href="#charts"
               aria-expanded="false"
-              aria-controls="charts"
-            >
+              aria-controls="charts">
               <i className="typcn typcn-chart-pie-outline menu-icon"></i>
               <span className="menu-title">Finance</span>
               <i className="menu-arrow"></i>
@@ -247,7 +233,8 @@ const Sidebar = () => {
               <ul className="nav flex-column sub-menu">
                 <li className="nav-item">
                   {" "}
-                  <a className="nav-link" href="pages/tables/basic-table.html">
+                  <a className="nav-link" onClick={()=>navigate('staffattendance')}
+                  style={{cursor:'pointer'}}>
                     Staff Attendance
                   </a>
                 </li>

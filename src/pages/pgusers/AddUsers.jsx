@@ -26,7 +26,8 @@ const AddUsers=()=> {
   const [singleBedPrice,setSingleBedPrice]=useState('')
   const [sharingBedPrice,setSharingBedPrice]=useState('')
 
-  
+  const today = new Date().toISOString().slice(0, 10);
+
   
   
   
@@ -52,12 +53,13 @@ const AddUsers=()=> {
     room: '', // Default value for room
     bed: '',
     billingCycle: 'monthly',
-    billingDate: '',
+    billingDate: today,
     paymentType:'',
     amount: '',
     billingAmount:'',
     parentPhoneNumber:'',
     parentEmail:'',
+    payment:'cash'
   });
 
 
@@ -199,7 +201,8 @@ const AddUsers=()=> {
         amount: userDataFromLocation.amount,
         billingAmount:userDataFromLocation.billingAmount,
         parentEmail:userDataFromLocation.parentEmail,
-        parentPhoneNumber:userDataFromLocation.parentPhoneNumber
+        parentPhoneNumber:userDataFromLocation.parentPhoneNumber,
+        payment:userDataFromLocation.payment
       });
   
       // Set rooms and beds data after fetching completes
@@ -290,7 +293,8 @@ const AddUsers=()=> {
         amount: parseInt(formData.amount),
         billingAmount:parseInt(formData.billingAmount),
         parentPhoneNumber:parseInt(formData.parentPhoneNumber),
-        parentEmail:formData.parentEmail
+        parentEmail:formData.parentEmail,
+        payment:formData.payment
       };
   
       let url = `${apiUrl}/api/createhosteluser`;
@@ -519,7 +523,6 @@ return(
 
     <Grid item xs={12} sm={6}>
   <TextField
-    required
     id="parentEmail"
     name="parentEmail"
     label="Enter Email"
@@ -802,24 +805,25 @@ return(
           </Select>
         </Grid>
 
-       <Grid item xs={12} sm={6}>
-  <InputLabel htmlFor="billingDate">Billing date</InputLabel>
-  <TextField
-    required
-    id="billingDate"
-    name="billingDate"
-    type="date"
-    fullWidth
-    autoComplete="billing-date"
-    variant="standard"
-    value={formData.billingDate}
-    onChange={handleChange}error={Boolean(errors.billingDate)}
-    helperText={errors.billingDate}
-    InputLabelProps={{  
-      shrink: true,
-    }}
-  />
-</Grid>
+        <Grid item xs={12} sm={6}>
+      <InputLabel htmlFor="billingDate">Billing date</InputLabel>
+      <TextField
+        required
+        id="billingDate"
+        name="billingDate"
+        type="date"
+        fullWidth
+        autoComplete="billing-date"
+        variant="standard"
+        value={formData.billingDate}
+        onChange={handleChange}
+        error={Boolean(errors.billingDate)}
+        helperText={errors.billingDate}
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />
+    </Grid>
 
 
       <Grid item xs={12} sm={6}>
@@ -869,6 +873,23 @@ return(
           helperText={errors.billingAmount}
         />
       </Grid>
+
+      <Grid item xs={12} sm={6}>
+<Select
+  id="payment"
+  name="payment"
+  label="payment"
+  variant="standard"
+  fullWidth
+  required
+  defaultValue="select type"
+  onChange={handleChange}
+>
+  <MenuItem value="select type" disabled>Paying Amount</MenuItem>
+  <MenuItem value="cash">Cash</MenuItem>
+  <MenuItem value="online">Online</MenuItem>
+</Select>
+</Grid>
 
 </Grid>
     </div>
