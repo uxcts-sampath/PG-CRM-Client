@@ -478,12 +478,11 @@ useEffect(()=>{
             <Typography>Add Floor</Typography>
           <Typography style={{cursor:'pointer'}} onClick={handleFloorClose}><ClearIcon/></Typography>
           </div>
-          <Box  style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'10px'}}>
-      {/* Label and Input field for floor */}
+          {/* <Box  style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'10px'}}>
       <InputLabel htmlFor="floorName">Floor Name</InputLabel>
       <TextField id=" floorName" name=" floorName"  variant="outlined"  
           onChange={(e) => setFloorName(e.target.value)}/>
-          </Box>
+          </Box> */}
 
           <Box  style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'10px'}}>
       {/* Label and Input field for floor */}
@@ -518,7 +517,7 @@ useEffect(()=>{
       <div  className="row bgfloor p-3 mt-3">
     
           <div  className="col-xl-6">
-          <h4 className="mb-0">Floor Name : {val.floorName} </h4>
+          <h4 className="mb-0">Floor Number : {val.floorNumber} </h4>
          </div>
        
       
@@ -553,11 +552,7 @@ useEffect(()=>{
         <Typography style={{ cursor: 'pointer' }} onClick={handleRoomClose}><ClearIcon /></Typography>
       </div>
 
-      {/* Attached Washroom */}
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
-        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
-      </Box>
+     
 
       {/* Room Type */}
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
@@ -583,11 +578,7 @@ useEffect(()=>{
         <TextField id="roomNumber" name="roomnumber" variant="outlined" onChange={(e) => setRoomNumber(e.target.value)} />
       </Box>
 
-      {/* Shelf */}
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="shelf">Shelf</InputLabel>
-        <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
-      </Box>
+      
 
      {/* Number of Beds */}
      {roomType === "shared" && (
@@ -596,6 +587,18 @@ useEffect(()=>{
     <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
   </Box>
 )}
+
+ {/* Attached Washroom */}
+ <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
+        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
+      </Box>
+
+      {/* Shelf */}
+      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <InputLabel htmlFor="shelf">Shelf</InputLabel>
+        <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
+      </Box>
 
 
 

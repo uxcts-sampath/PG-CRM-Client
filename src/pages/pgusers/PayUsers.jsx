@@ -146,25 +146,55 @@ const PayUsers = () => {
 
     return (
         <div>
-            <input
+            <div>
+            <h2>User Payment</h2>
+        </div>
+        <div style={{display:'flex', justifyContent:'space-between'}} >
+
+        
+
+        <div>
+        <div>
+            <h5 style={{marginTop:'30px'}}>User ID</h5>
+        </div>
+        <div>
+        <input
                 type="text"
                 value={userReferenceId}
                 onChange={handleUserReferenceIdChange}
-                placeholder="Enter User Reference ID"
+                placeholder="ID"
+                className='refenceID'
+                style={{marginTop:'5px'}}
             />
             {error && <p>{error}</p>}
+
+            <div>
+            <h3 style={{marginTop:'30px'}}>User Details</h3>
+            </div>
             {userDetails && (
-                <div>
-                    <h2>User Details</h2>
-                    <p>Name: {userDetails.name}</p>
-                    <p>Mobile: {userDetails.mobile}</p>
+                <div className='payUserDetails'> 
+                    <p className='payUserDetails-list'>Name <span>{userDetails.name}</span></p>
+                    <p className='payUserDetails-list'>Type  <span>{userDetails.userType}</span></p>
+                    <p className='payUserDetails-list'>Package <span> {userDetails.requireRoomType}</span></p>
+                    <p className='payUserDetails-list'>Mobile<span> {userDetails.mobile}</span></p>
+                    <p style={{display:'flex',justifyContent:'space-between'}}>Father Name<span> {userDetails.fatherName} </span></p>
                 </div>
             )}
 
-            <div>
-            <div>
-                    <label htmlFor="billingDate">Billing Date:</label>
+
+        </div>
+        </div>
+
+       <div>  
+       <div>
+                    <h4  style={{marginTop:'30px'}}>Payment</h4>
+                </div>
+            <div className='payUserDetails' >
+                
+            <div className='payingDetails'>
+                    <label htmlFor="billingDate">Billing Date</label>
                     <input
+                    className='payingList'
                         type="date"
                         id="billingDate"
                         value={billingDate}
@@ -173,26 +203,15 @@ const PayUsers = () => {
                     />
                 </div>
 
-                <div>
-    <label htmlFor="paymentMethod">Payment Method:</label>
-    <select
-        id="paymentMethod"
-        value="paymentType" // Default value set to 'cash'
-        onChange={(e) => setPayment(e.target.value)} // Update the payment state
-    >
-        <option value="paymentType" disabled>Payment Type</option>
-        <option value="cash">Cash</option>
-        <option value="online">Online</option>
-    </select>
-</div>
 
-
-                <div>
-                    <label htmlFor="payableAmount">Payable Amount:</label>
+                <div className='payingDetails'>
+                    <label htmlFor="payableAmount">Payable Amount</label>
                     <input
+                     className='payingList'
     type="number"
     id="payableAmount"
     value={payableAmount}
+    disabled
     onChange={(e) => {
         const value = e.target.value;
         setPayableAmount(value);
@@ -209,9 +228,11 @@ const PayUsers = () => {
 </div>
 
 
-            <div>           
+            <div className='payingDetails'>           
                     <label htmlFor="pendingAmount">Outstanding Amount:</label>
                     <input
+                    disabled
+                        className='payingList'
                         type="number"
                         id="pendingAmount"
                         value={pendingAmount}
@@ -220,42 +241,60 @@ const PayUsers = () => {
                 </div>
 
 
-                <div>
-                    <label htmlFor="subTotal">Sub Total:</label>
+                <div  style={{marginTop:'10px ', display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <label htmlFor="subTotal">Sub Total</label>
                     <input
                         type="number"
                         id="subTotal"
                         value={subTotal}
+                        className='payingList'
+                        disabled
                         onChange={(e) => setSubTotal(e.target.value)}
                     />
                 </div>
 
-                <div>
-    <label htmlFor="customAmount">Custom Amount/Paying Amount * : </label>
+              
+            </div>
+            <div className='paymentMethod' style={{marginTop:'30px'}}>
+    <label htmlFor="paymentMethod">Payment Method *</label>
+    <select
+        id="paymentMethod"
+        value="paymentType" // Default value set to 'cash'
+        onChange={(e) => setPayment(e.target.value)} // Update the payment state
+
+    >
+        <option value="paymentType" disabled>Payment Type</option>
+        <option value="cash">Cash</option>
+        <option value="online">Online</option>
+    </select>
+</div>
+            <div className='customAmount'>
+    <label htmlFor="customAmount">Custom Amount *</label>
     <input
         required // Add the required attribute
-        type="number"
+        type="Number"
         id="customAmount"
         value={customAmount}
         onChange={(e) => setCustomAmount(e.target.value)}
     />
 </div>
 
-
-               
-
-                <div>
-                    <label htmlFor="total">Total:</label>
+                <div className='total'>
+                    <label htmlFor="total">Total</label>
                     <input
                         type="number"
                         id="total"
                         value={total}
                         onChange={(e) => setTotal(e.target.value)}
+                        disabled
                     />
                 </div>
 
-                <button onClick={handleUpdatePayment}>Pay Bill</button>
-            </div>
+                <button className='payUserSubmit' onClick={handleUpdatePayment}>Submit</button>
+        </div>
+        
+        </div>
+        
         </div>
     );
 };

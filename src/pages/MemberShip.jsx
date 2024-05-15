@@ -50,21 +50,24 @@ const MemberShip = () => {
         <div className="col-lg-12 d-flex grid-margin stretch-card">
           <div className="card ">
             <div className="card-body ml-4">
-              <h1>Membership</h1>
-              <p>Plan Details:{membershipData.paymentPlan}</p>
-              <div className="row">
-                <div className="col-lg-9 border border-light">
+              <h1>Membership & Billing</h1>
+              <p>Plan Details</p>
+              <div className="row d-flex justify-content-between col-lg-10">
+                <div className="col-lg-5 border border-light">
                   <div className="mt-3">
-                    <h3>Standard Plan</h3>
+                    <h3>{membershipData.paymentPlan} Plan</h3>
                     <p>Add subscription details</p>
                   </div>
+                </div>
+                <div className="col-lg-5 border border-light">
+
                 </div>
               </div>
               <p className="m-3 mr-0">Payment Info</p>
               <div className="row">
                 <div className="col-lg-9 border border-light">
                   <div className="m-3">
-                    <h3>Next Payment</h3>
+                    <h3>Next Payment Due</h3>
                     {/* Assuming membershipData is an object and accessing nextPlanDate */}
                     <p>{membershipData.nextPlanDate}</p>
                   </div>
@@ -101,7 +104,7 @@ const MemberShip = () => {
                         <div className=" mt-1"></div>
                       </td>
                       <td>
-                        <div className=" mt-1"></div>
+                        <div className=" mt-1">{membershipData.fromDate} -- {membershipData.toDate}</div>
                       </td>
                       <td>
                         <div className=" mt-1"></div>

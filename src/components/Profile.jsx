@@ -51,15 +51,10 @@ console.log(userData)
               <div className="row">
                 <div className="col-lg-6">
                   <div className="d-flex flex-wrap justify-content-between">
-                    <h4 className="card-title mb-3">Students List</h4>
+                    <h4 className="card-title mb-3">Hostel Profile</h4>
                   </div>
                 </div>
-                <div className="col-lg-6">
-                  <div className="d-flex align-items-center justify-content-md-end">
-                    <input type="text" placeholder="search student" />{" "}
-                    <button className=" btn-outline-secondary">search</button>
-                  </div>
-                </div>
+                
               </div>
 
 
@@ -70,12 +65,12 @@ console.log(userData)
                       <th>
                         <div className="d-flex">
                           <div>
-                            <div className="m-l-2"> Name</div>
+                            <div className="m-l-2">Owner Name</div>
                           </div>
                         </div>
                       </th>
                       <th>Hostel Name</th>
-                      <th>Mobile Number</th>
+                      <th>Contact Number</th>
                       <th>User Size</th>
                       <th>Action</th>
                     </tr>
