@@ -108,77 +108,9 @@ const Home = () => {
     setShowSnackbar(false);
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event) => { 
     setValue(event.target.value);
   };
-
-//   const handleProceed = async () => {
-//     if (value !== "") {
-//         if (value === "free") {
-//             // Handle Free Plan
-//             setOpenWelcomeModal(false);
-//             setOpenPaymentModal(false);
-//             setProceedClicked(true);
-//             sessionStorage.setItem("hasSelectedOptions", true);
-//             sessionStorage.setItem("lastFreeSignInDate", new Date().toISOString());
-//             setShowFreeSuccessModal(true);
-//         } else {
-//             // Handle Yearly and Monthly Plans
-//             const price = prices[userSize][value]; // Get the price based on the selected plan and user size
-//             if (price) {
-//                 try {
-
-//                     // Make API call to process payment
-//                     const response = await fetch("/api/payment", {
-                    
-//                         method: "POST",
-//                         headers: {
-//                             "Content-Type": "application/json",
-//                             Authorization: `Bearer ${token}`,
-//                         },
-//                         body: JSON.stringify({
-//                             userId: userId,
-//                             userSize: userSize,
-//                             paymentPlan: value,
-//                             amount: price // Pass the amount to the backend
-//                         }),
-//                     });
-//                     const responseData = await response.json();
-                   
-
-//                     console.log("response",response)
-
-//                     console.log('fvxvcxc',response.url)
-
-//                     if (responseData.success) {
-//                         if (responseData.url) {
-//                             // Redirect user to the new URL
-//                             window.location.href = responseData.url;
-//                         } else {
-//                             // Payment initiated successfully, handle response as needed
-//                             const responseData = await response.json();
-//                             console.log('rfsdx',responseData)
-//                             // Redirect user to payment page or handle success case
-//                             window.location.href = responseData.data.instrumentResponse.redirectInfo.url;
-//                         }
-//                     } else {
-//                         // Handle payment initiation failure
-//                         console.error("Failed to initiate payment:", response.statusText);
-//                         // Show error message to the user or handle the error appropriately
-//                     }
-//                 } catch (error) {
-//                     console.error("Error initiating payment:", error);
-//                     // Handle payment initiation error
-//                     // Show error message to the user or handle the error appropriately
-//                 }
-//             } else {
-//                 console.error("Price not found for the selected plan and user size");
-//             }
-//         }
-//     } else {
-//         console.log("Please select a membership option before proceeding.");
-//     }
-// };
 
 
 
@@ -308,6 +240,7 @@ const handleProceed = async () => {
     .catch(error => console.error('Error fetching floor data:', error));
   };
 
+
   useEffect(()=>{
     floorData()
   },[])
@@ -400,7 +333,7 @@ const handleProceed = async () => {
                     <h4 className="card-title mb-3">Beds</h4>
                   </div>
                   <div className="col-lg-12">Avaliable - {floor.availableBeds}</div>
-                  <div className="col-lg-12">Occipied - {floor.occupiedBeds}</div>
+                  <div className="col-lg-12">Occupied - {floor.occupiedBeds}</div>
                 </div>
               </div>
             </div>
@@ -415,7 +348,7 @@ const handleProceed = async () => {
                     <h4 className="card-title mb-3">Users</h4>
                   </div>
                   <div className="col-lg-12">Open - 30</div>
-                  <div className="col-lg-12">Occipied - 60</div>
+                  <div className="col-lg-12">Occupied - 60</div>
                 </div>
               </div>
             </div>

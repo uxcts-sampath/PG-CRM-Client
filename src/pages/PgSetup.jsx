@@ -103,6 +103,9 @@ const handleSubmit = async () => {
     console.log('Success:', data);
     
     handleFloorClose();
+
+    floorData();
+
     setFloors(prevFloors => [...prevFloors, data]);
   } catch (error) {
     console.error('Error:', error);
@@ -187,7 +190,8 @@ const handleSubmit = async () => {
       return response.json();
     })
     .then(data => {
-      setFloors(data);      
+      setFloors(data);   
+      console.log(data)   
     })
     .catch(error => console.error('Error fetching floor data:', error));
   };
@@ -379,6 +383,9 @@ useEffect(()=>{
  ))} */}
 
 
+ 
+
+
 
           <div className="bg-light p-2 d-flex align-items-center ">
           {priceData?.length>0 && priceData?.map((val)=>(
@@ -509,37 +516,31 @@ useEffect(()=>{
       </Modal>
     </div>
             </div>
-          
-
-      {floors?.length>0 && floors?.map((val)=>{ 
-      return( 
-         
-      <div  className="row bgfloor p-3 mt-3">
-    
-          <div  className="col-xl-6">
-          <h4 className="mb-0">Floor Number : {val.floorNumber} </h4>
-         </div>
-       
       
-        <div className="col-xl-6">
-          <div className="d-flex align-items-center justify-content-md-end">
-            <div className="pr-1 mb-3 mr-2 mb-xl-0">
+            {floors && floors.map((val) => (
+    <div key={val._id}>
+{val.floors && val.floors.map((floorData) => (
+        <div key={floorData._id} className="row bgfloor p-3 mt-3">
+        <div  className="col-xl-6">
+          <h4 className="mb-0">Floor Number : {floorData.floorNumber} </h4>
+         </div>
+         <div className="col-xl-6">
+         <div className="d-flex align-items-center justify-content-md-end">
+         <div className="pr-1 mb-3 mr-2 mb-xl-0">
                 <button
                   type="button"
                   className="btn btn-sm bg-white btn-icon-text border"
-                  onClick={() => handleFloorDelete(val._id)}> {/* Pass floor ID to handleFloorDelete */}
+                  onClick={() => handleFloorDelete(floorData._id)}> {/* Pass floor ID to handleFloorDelete */}
                   <i className="typcn typcn-trash mr-2"></i>
                   Delete Floor
                 </button>
-
             </div>
             <div className="pr-1 mb-3 mb-xl-0">
-              <button type="button" className="btn btn-sm btn-primary btn-icon-text border" onClick={() => handleRoomOpen(val._id)}>
+            <button type="button" className="btn btn-sm btn-primary btn-icon-text border" onClick={() => handleRoomOpen(floorData._id)}>
                 <i className="typcn typcn-plus mr-2"></i>Add Room
               </button>
-
-{/* Creating Modal for Room */}
-
+        </div>
+        {/* Creating Modal for Room */}
 <div>
   <Modal
     open={roomOpen}
@@ -552,7 +553,11 @@ useEffect(()=>{
         <Typography style={{ cursor: 'pointer' }} onClick={handleRoomClose}><ClearIcon /></Typography>
       </div>
 
-     
+      {/* Attached Washroom */}
+      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
+        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
+      </Box>
 
       {/* Room Type */}
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
@@ -578,7 +583,11 @@ useEffect(()=>{
         <TextField id="roomNumber" name="roomnumber" variant="outlined" onChange={(e) => setRoomNumber(e.target.value)} />
       </Box>
 
-      
+      {/* Shelf */}
+      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <InputLabel htmlFor="shelf">Shelf</InputLabel>
+        <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
+      </Box>
 
      {/* Number of Beds */}
      {roomType === "shared" && (
@@ -587,22 +596,6 @@ useEffect(()=>{
     <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
   </Box>
 )}
-
- {/* Attached Washroom */}
- <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
-        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
-      </Box>
-
-      {/* Shelf */}
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="shelf">Shelf</InputLabel>
-        <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
-      </Box>
-
-
-
-
       {/* Buttons */}
       <Box style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
         <Button variant="outlined" color="secondary" onClick={handleRoomClose} style={{ marginRight: '27px' }}>Cancel</Button>
@@ -613,57 +606,54 @@ useEffect(()=>{
   </Modal>
 </div>
 
-
-
-{/* Room Creating Modal ends */}
-
-            </div>
           </div>
-        </div>
-        
-
-        {val.rooms.map(room => (
-  <div className="col-xl-2 d-flex stretch-card mb-2" key={room._id}>
-    <div className="card">
-      <div className="card-body">
-        <div className="d-flex flex-wrap justify-content-between">
-          <div className="row b-l-share ">
-            <div className="close-room">
-            <button onClick={() => handleRoomDelete(room._id)}><ClearIcon/></button>
-            </div>
-            <div className="col-lg-12">
-              <h5 className="card-title mb-3">
-                {room.type === 'single' ? (
-                  <i className="typcn typcn-user mr-2"></i> /* Single icon */
-                ) : (
-                  <i className="typcn typcn-group mr-2"></i> /* Shared icon */
-                )}
-                # {room.roomNumber}
-              </h5>
-            </div>
-            <div className="col-lg-12">Beds -<span className="room-count-input">{room.numberOfBeds}</span>
-            </div>
-            <div className="col-lg-12">
-              {room.beds.map(bed => (
-                <span
-                key={bed._id}
-                className={`bed-icon ${bed.status === 'occupied' ? 'occupied' : ''}`}
-              >
-                {/* Render filled circle for occupied bed, otherwise render empty circle */}
-                {bed.status === 'occupied' ? <CircleIcon className="green-circle"/> : <CircleOutlinedIcon/>}
-              </span>
-              ))}
-            </div>          
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-))}
-      </div>)})}
-      
-
-
+         
+          {floorData.rooms && floorData.rooms.map((roomData) => (
+             <div className="col-xl-2 d-flex stretch-card mb-2" key={roomData._id}>
+             <div className="card">
+               <div className="card-body">
+                 <div className="d-flex flex-wrap justify-content-between">
+                   <div className="row b-l-share ">
+                     <div className="close-room">
+                     <button onClick={() => handleRoomDelete(roomData._id)}><ClearIcon/></button>
+                     </div>
+                     <div className="col-lg-12">
+                       <h5 className="card-title mb-3">
+                         {roomData.type === 'single' ? (
+                           <i className="typcn typcn-user mr-2"></i> /* Single icon */
+                         ) : (
+                           <i className="typcn typcn-group mr-2"></i> /* Shared icon */
+                         )}
+                         # {roomData.roomNumber}
+                       </h5>
+                     </div>
+                     <div className="col-lg-12">Beds -<span className="room-count-input">{roomData.numberOfBeds}</span>
+                     </div>
+                     <div className="col-lg-12">
+                       {roomData.beds.map(bed => (
+                         <span
+                         key={bed._id}
+                         className={`bed-icon ${bed.status === 'occupied' ? 'occupied' : ''}`}
+                       >
+                         {/* Render filled circle for occupied bed, otherwise render empty circle */}
+                         {bed.status === 'occupied' ? <CircleIcon className="green-circle"/> : <CircleOutlinedIcon/>}
+                       </span>
+                       ))}
+                     </div>          
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+          ))}
+          </div>
+          
+          
+        ))}
+       
+       </div>
+ ))}
     </>
   );
 };

@@ -116,24 +116,40 @@ const AddUsers=()=> {
     const { name, value } = e.target;
   
     if (name === 'requireRoomType') {
-      // Handle room type change
-      // Update form data with selected room type
-      setFormData(prevState => ({ ...prevState, [name]: value }));
-  
+     
+      setFormData(prevState => ({ ...prevState, [name]: value }));  
       // Handle room type specific logic
-      if (value === 'single') {
-        // If single room type selected, show only single bed rooms
-        const singleBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'single'));
+      if (value === 'single' && floors) {
+
+      
+
+        const singleBedRooms = floors.flatMap(floor =>
+          floor.floors.flatMap(floorData =>
+              (floorData.rooms || []).filter(room => room.type === "single")
+          )
+      );
+      
+      console.log(singleBedRooms); 
         setRooms(singleBedRooms);
-        // Set amount based on single bed price
         setFormData(prevState => ({ ...prevState, amount: singleBedPrice }));
-      } else if (value === 'shared') {
-        // If shared room type selected, show rooms with more than one bed
-        const sharedBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'shared'));
-        setRooms(sharedBedRooms);
-        // Set amount based on shared bed price
-        setFormData(prevState => ({ ...prevState, amount: sharingBedPrice }));
-      }
+    }
+    
+    else if (value === 'shared' && floors) {
+
+      const sharedBedRooms = floors.flatMap(floor =>
+        floor.floors.flatMap(floorData =>
+            (floorData.rooms || []).filter(room => room.type === "shared")
+        )
+    );
+
+    console.log(sharedBedRooms)
+
+    setRooms(sharedBedRooms)
+      // Set amount based on shared bed price
+      setFormData(prevState => ({ ...prevState, amount: sharingBedPrice }));
+  }
+
+  console.log(formData)
       // Clear room and bed selections
       setFormData(prevState => ({ ...prevState, floor: '', room: '', bed: '' }));
     } else if (name === 'floor') {
@@ -216,7 +232,7 @@ const AddUsers=()=> {
         setBeds(notOccupiedBeds);
       }
     }
-  }, [location.state, floors]); // Add floors dependency
+  }, [location.state]); // Add floors dependency
   
   const validateForm = () => {
     const newErrors = {};
@@ -284,7 +300,7 @@ const AddUsers=()=> {
         state: formData.state,
         referenceMobile:formData.referenceMobile,
         requireRoomType: formData.requireRoomType,
-        floor: formData.floor,
+        // floor: formData.floor,
         room: formData.room,
         bed: parseInt(formData.bed),
         billingCycle: formData.billingCycle,
@@ -718,28 +734,7 @@ return(
      
       
        
-  <Grid item xs={12} sm={2}>
-    <FormControl variant="standard" fullWidth required>
-   
-      <InputLabel htmlFor="floor">Floor</InputLabel>
-      <Select
-  id="floor"
-  name="floor"
-  label="Floor"
-  variant="standard"
-  fullWidth
-  required
-  value={formData.floor} // Set value prop to formData.floor
-  onChange={handleChange}
->
-  {floors?.length > 0 && floors?.map((floor) => (
-    <MenuItem key={floor._id} value={floor._id}>{floor.floorName}</MenuItem>
-  ))}
-</Select>
-
-     
-    </FormControl>
-  </Grid>
+  
 
   <Grid item xs={12} sm={2}>
     <FormControl variant="standard" fullWidth required>
@@ -850,7 +845,7 @@ return(
   fullWidth
   required
   defaultValue="Payment Type"
-  value={formData.paymentType}
+  // value={formData.paymentType}
   onChange={handleChange}
 >
   <MenuItem value="Payment Type" disabled>Payment Type</MenuItem>
@@ -858,6 +853,9 @@ return(
   <MenuItem value="fullPayment">Full Payment</MenuItem>
 </Select>
 </Grid>
+
+
+
 
 <Grid item xs={12} sm={6}>
         <TextField

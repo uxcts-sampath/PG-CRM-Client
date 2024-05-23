@@ -82,10 +82,7 @@ const Login = ({ onSignin }) => {
         const suspensionDate=responseData.user.suspensionDate;
         const hideFreeOption = responseData.user.hideFreeOption;
 
-    
-
-       
-        
+        console.log('usersize',userSize)
       
         const { token } = responseData;
        
@@ -107,15 +104,8 @@ const Login = ({ onSignin }) => {
 
         sessionStorage.setItem("hideFreeOption",hideFreeOption)
 
-        console.log('susdfsdjn',suspensionDate)
-        console.log('paymentPlan',paymentPlan)
-        console.log('hide free option',hideFreeOption)
-
-      
-
-        // Trigger the onSignin callback to update authentication state
+      // Trigger the onSignin callback to update authentication state
         onSignin();
-
 
         // Redirect to the dashboard after successful login
         navigate("/home");
