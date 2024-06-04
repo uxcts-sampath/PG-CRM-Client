@@ -77,16 +77,21 @@ const Home = () => {
       setHideFreeOption(hideFree);
     }
   }, []);
+
+
+   // Check if the user has already selected a payment plan
+   useEffect(() => {
+    const hasSelectedOptions = sessionStorage.getItem("hasSelectedOptions") === "true";
+    if (hasSelectedOptions) {
+      setOpenWelcomeModal(false);
+      setOpenPaymentModal(false);
+    } else {
+      setOpenWelcomeModal(true);
+    }
+  }, []);
   
   
   
-
-  
-
-
-
-
-
 
   useEffect(() => {
     // Calculate suspension time based on user's payment method and update state
@@ -193,9 +198,7 @@ const handleProceed = async () => {
   }
 };
 
-
-
-  
+ 
 
   const handleFreeSuccessClose = () => {
     setShowFreeSuccessModal(false);
@@ -244,6 +247,9 @@ const handleProceed = async () => {
   useEffect(()=>{
     floorData()
   },[])
+
+
+  
 
 
   return (

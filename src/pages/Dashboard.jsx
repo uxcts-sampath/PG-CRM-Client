@@ -26,7 +26,7 @@ const Dashboard = () => {
   const routes = [
     { path: '/', element: <Home /> },
     { path: 'pgsetup', element: <PgSetup /> },
-    {path:'pgusers', element:<PgUsers/>},
+    {path:'pgusers', element:<PgUsers/>,exact:true},
     {path:'profile',element:<Profile/>},
     {path:'membership', element:<MemberShip/>},
     {path:'upcomingfeelist',element:<UpcomingFeeList/>},

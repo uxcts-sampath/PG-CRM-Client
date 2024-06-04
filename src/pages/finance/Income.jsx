@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const Income = () => {
+
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   const [incomeData, setIncomeData] = useState({ paymentRecords: [], totalIncome: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -8,15 +11,16 @@ const Income = () => {
   const [date, setDate] = useState("2024-05-23");
 
   const token = sessionStorage.getItem("token");
+  
 
 
   useEffect(() => {
     const fetchIncomeRecords = async () => {
       try {
         // Make a GET request to your backend API to fetch income records based on selected type and date
-        const response = await fetch(`http://localhost:3000/api/income?type=${type}&date=${date}`,{
+        const response = await fetch(`${apiUrl}/api/income?type=${type}&date=${date}`,{
           method: 'GET',
-          headers: {
+          headers: {  
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
