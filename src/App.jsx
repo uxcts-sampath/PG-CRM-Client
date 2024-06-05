@@ -13,11 +13,9 @@ const App = () => {
   const { isAuthenticated, signin } = useAuth();
 
   // const [openWelcomeModal, setOpenWelcomeModal] = useState(true);
-
   // const modalCLose = () => {
   //   setOpenWelcomeModal(false);
   // }
-
   // console.log(openWelcomeModal, 'openWelcomeModal');
 
   return (
