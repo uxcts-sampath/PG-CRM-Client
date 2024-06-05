@@ -33,7 +33,7 @@ const Home = () => {
   const userSize = sessionStorage.getItem("userSize");
   const navigate = useNavigate();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const [floors,setFloors]=useState([]);
+  const [floors, setFloors] = useState([]);
 
   const [openWelcomeModal, setOpenWelcomeModal] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
@@ -55,43 +55,43 @@ const Home = () => {
     },
   };
 
-  
+
   const generateTransactionId = () => {
     // Generate a unique transaction ID based on your requirements
     return Date.now().toString(); // Example: Using current timestamp as transaction ID
   };
 
 
-  
-  
-
-  useEffect(() => {
-    const hasActivePaymentPlan = sessionStorage.getItem("hasActivePaymentPlan") === "true";
-    const suspensionDate = new Date(sessionStorage.getItem("suspensionDate"));
-    const today = new Date();
-  
-    // Check if the user is not on a payment plan and the suspension date has expired
-    if (!hasActivePaymentPlan && suspensionDate <= today) {
-      setOpenWelcomeModal(true);
-      const hideFree = sessionStorage.getItem("hideFreeOption") === "true";
-      setHideFreeOption(hideFree);
-    }
-  }, []);
 
 
-   // Check if the user has already selected a payment plan
-   useEffect(() => {
-    const hasSelectedOptions = sessionStorage.getItem("hasSelectedOptions") === "true";
-    if (hasSelectedOptions) {
-      setOpenWelcomeModal(false);
-      setOpenPaymentModal(false);
-    } else {
-      setOpenWelcomeModal(true);
-    }
-  }, []);
-  
-  
-  
+
+  // useEffect(() => {
+  //   const hasActivePaymentPlan = sessionStorage.getItem("hasActivePaymentPlan") === "true";
+  //   const suspensionDate = new Date(sessionStorage.getItem("suspensionDate"));
+  //   const today = new Date();
+
+  //   // Check if the user is not on a payment plan and the suspension date has expired
+  //   if (!hasActivePaymentPlan && suspensionDate <= today) {
+  //     setOpenWelcomeModal(true);
+  //     const hideFree = sessionStorage.getItem("hideFreeOption") === "true";
+  //     setHideFreeOption(hideFree);
+  //   }
+  // }, []);
+
+
+  // // Check if the user has already selected a payment plan
+  // useEffect(() => {
+  //   const hasSelectedOptions = sessionStorage.getItem("hasSelectedOptions") === "true";
+  //   if (hasSelectedOptions) {
+  //     setOpenWelcomeModal(false);
+  //     setOpenPaymentModal(false);
+  //   } else {
+  //     setOpenWelcomeModal(true);
+  //   }
+  // }, []);
+
+
+
 
   useEffect(() => {
     // Calculate suspension time based on user's payment method and update state
@@ -113,92 +113,92 @@ const Home = () => {
     setShowSnackbar(false);
   };
 
-  const handleChange = (event) => { 
+  const handleChange = (event) => {
     setValue(event.target.value);
   };
 
 
 
 
-const handleProceed = async () => {
-  try {
-    console.log("Handle Proceed function called");
-    if (value !== "") {
-      console.log("Selected value inside handleProceed:", value);
-      if (value === "free") {
-        console.log("Selected free option. Initiating free plan.");
-        setOpenWelcomeModal(false);
-        setOpenPaymentModal(false);
-        setProceedClicked(true);
-        sessionStorage.setItem("hasSelectedOptions", true);
-        sessionStorage.setItem("lastFreeSignInDate", new Date().toISOString());
-        setShowFreeSuccessModal(true);
+  const handleProceed = async () => {
+    try {
+      console.log("Handle Proceed function called");
+      if (value !== "") {
+        console.log("Selected value inside handleProceed:", value);
+        if (value === "free") {
+          console.log("Selected free option. Initiating free plan.");
+          setOpenWelcomeModal(false);
+          setOpenPaymentModal(false);
+          setProceedClicked(true);
+          sessionStorage.setItem("hasSelectedOptions", true);
+          sessionStorage.setItem("lastFreeSignInDate", new Date().toISOString());
+          setShowFreeSuccessModal(true);
 
-        const response = await fetch(`${apiUrl}/api/payment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userId: userId,
-            userSize: userSize,
-            paymentPlan: value,
-            amount: 0,
-            transactionId: "N/A", // Example: Set transactionId as "N/A" for free plan
-          }),
-        });
-        const responseData = await response.json();
-        console.log("API Response:", responseData);
+          const response = await fetch(`${apiUrl}/api/payment`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userId: userId,
+              userSize: userSize,
+              paymentPlan: value,
+              amount: 0,
+              transactionId: "N/A", // Example: Set transactionId as "N/A" for free plan
+            }),
+          });
+          const responseData = await response.json();
+          console.log("API Response:", responseData);
+        } else {
+          console.log("Selected paid option. Initiating payment plan.");
+          // Generate transactionId here or fetch it from the server
+          const transactionId = generateTransactionId(); // Generate the transaction ID
+
+          const response = await fetch(`${apiUrl}/api/payment`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userId: userId,
+              userSize: userSize,
+              paymentPlan: value,
+              amount: prices[userSize][value],
+              transactionId: transactionId, // Include the generated transactionId
+            }),
+          });
+          const responseData = await response.json();
+          console.log("API Response:", responseData);
+
+
+          if (responseData.success) {
+            if (responseData.url) {
+              // Redirect user to the new URL
+              window.location.href = responseData.url;
+            } else {
+              // Payment initiated successfully, handle response as needed
+              const responseData = await response.json();
+              console.log('rfsdx', responseData)
+              // Redirect user to payment page or handle success case
+              window.location.href = responseData.data.instrumentResponse.redirectInfo.url;
+            }
+          } else {
+            // Handle payment initiation failure
+            console.error("Failed to initiate payment:", response.statusText);
+            // Show error message to the user or handle the error appropriately
+          }
+        }
       } else {
-        console.log("Selected paid option. Initiating payment plan.");
-        // Generate transactionId here or fetch it from the server
-        const transactionId = generateTransactionId(); // Generate the transaction ID
-
-        const response = await fetch(`${apiUrl}/api/payment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userId: userId,
-            userSize: userSize,
-            paymentPlan: value,
-            amount: prices[userSize][value],
-            transactionId: transactionId, // Include the generated transactionId
-          }),
-        });
-        const responseData = await response.json();
-        console.log("API Response:", responseData);
-
-
-                            if (responseData.success) {
-                        if (responseData.url) {
-                            // Redirect user to the new URL
-                            window.location.href = responseData.url;
-                        } else {
-                            // Payment initiated successfully, handle response as needed
-                            const responseData = await response.json();
-                            console.log('rfsdx',responseData)
-                            // Redirect user to payment page or handle success case
-                            window.location.href = responseData.data.instrumentResponse.redirectInfo.url;
-                        }
-                    } else {
-                        // Handle payment initiation failure
-                        console.error("Failed to initiate payment:", response.statusText);
-                        // Show error message to the user or handle the error appropriately
-                    }
+        console.log("Please select a membership option before proceeding.");
       }
-    } else {
-      console.log("Please select a membership option before proceeding.");
+    } catch (error) {
+      console.error("Error in handleProceed:", error);
     }
-  } catch (error) {
-    console.error("Error in handleProceed:", error);
-  }
-};
+  };
 
- 
+
 
   const handleFreeSuccessClose = () => {
     setShowFreeSuccessModal(false);
@@ -225,31 +225,31 @@ const handleProceed = async () => {
 
   const floorData = () => {
     fetch(`${apiUrl}/api/floors`, {
-      method: 'GET', 
+      method: 'GET',
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}` 
+        Authorization: `Bearer ${token}`
       },
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch floor data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      setFloors(data);      
-    })
-    .catch(error => console.error('Error fetching floor data:', error));
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch floor data');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setFloors(data);
+      })
+      .catch(error => console.error('Error fetching floor data:', error));
   };
 
 
-  useEffect(()=>{
+  useEffect(() => {
     floorData()
-  },[])
+  }, [])
 
 
-  
+
 
 
   return (
@@ -302,7 +302,7 @@ const handleProceed = async () => {
               <button
                 type="button"
                 className="btn btn-sm bg-white btn-icon-text border"
-                onClick={()=>navigate('profile')}
+                onClick={() => navigate('profile')}
               >
                 <i className="typcn typcn-info-large-outline mr-2"></i>info
               </button>
@@ -313,71 +313,71 @@ const handleProceed = async () => {
 
 
 
-      {floors?.length>0 && floors?.map((floor)=>(
-      <div className="row  mt-3">
-        <div className="col-xl-3 d-flex grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-between">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <h5 className="card-title mb-3">Rooms</h5>
+      {floors?.length > 0 && floors?.map((floor) => (
+        <div className="row  mt-3">
+          <div className="col-xl-3 d-flex grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex flex-wrap justify-content-between">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <h5 className="card-title mb-3">Rooms</h5>
+                    </div>
+                    <div className="col-lg-12">Total Rooms - {floor.totalRooms}</div>
+                    {/* <div className="col-lg-12">Occipied - 12</div> */}
                   </div>
-                  <div className="col-lg-12">Total Rooms - {floor.totalRooms}</div>
-                  {/* <div className="col-lg-12">Occipied - 12</div> */}
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="col-xl-3 d-flex grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-between">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <h4 className="card-title mb-3">Beds</h4>
+          <div className="col-xl-3 d-flex grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex flex-wrap justify-content-between">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <h4 className="card-title mb-3">Beds</h4>
+                    </div>
+                    <div className="col-lg-12">Avaliable - {floor.availableBeds}</div>
+                    <div className="col-lg-12">Occupied - {floor.occupiedBeds}</div>
                   </div>
-                  <div className="col-lg-12">Avaliable - {floor.availableBeds}</div>
-                  <div className="col-lg-12">Occupied - {floor.occupiedBeds}</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="col-xl-3 d-flex grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-between">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <h4 className="card-title mb-3">Users</h4>
+          <div className="col-xl-3 d-flex grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex flex-wrap justify-content-between">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <h4 className="card-title mb-3">Users</h4>
+                    </div>
+                    <div className="col-lg-12">Open - 30</div>
+                    <div className="col-lg-12">Occupied - 60</div>
                   </div>
-                  <div className="col-lg-12">Open - 30</div>
-                  <div className="col-lg-12">Occupied - 60</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="col-xl-3 d-flex grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-between">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <h5 className="card-title mb-3">Revenue</h5>
+          <div className="col-xl-3 d-flex grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex flex-wrap justify-content-between">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <h5 className="card-title mb-3">Revenue</h5>
+                    </div>
+                    <div className="col-lg-12">Income - 20000</div>
+                    <div className="col-lg-12">Expensess - 12000</div>
                   </div>
-                  <div className="col-lg-12">Income - 20000</div>
-                  <div className="col-lg-12">Expensess - 12000</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-  ))}
+      ))}
 
 
       <UpcomingFeeList />
@@ -410,7 +410,7 @@ const handleProceed = async () => {
                       key={period}
                       value={period}
                       control={<Radio />}
-                     
+
                       label={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <div>
@@ -443,26 +443,26 @@ const handleProceed = async () => {
                       }
                     />
                   ))}
-                 {!hideFreeOption && (
-    <FormControlLabel
-      value="free"
-      control={<Radio />}
-      label={
-        <div className="d-flex align-items-center">
-          <div>
-            <span>Free</span>
-          </div>
-          <div className="text-secondary">
-            <p>2 MONTHS TRAIL</p>
-          </div>
-          <div className="ml-4 border-left pl-2">
-            <h6 className="text-right">INR</h6>
-            <h6>0</h6>
-          </div>
-        </div>
-      }
-    />
-  )}
+                  {!hideFreeOption && (
+                    <FormControlLabel
+                      value="free"
+                      control={<Radio />}
+                      label={
+                        <div className="d-flex align-items-center">
+                          <div>
+                            <span>Free</span>
+                          </div>
+                          <div className="text-secondary">
+                            <p>2 MONTHS TRAIL</p>
+                          </div>
+                          <div className="ml-4 border-left pl-2">
+                            <h6 className="text-right">INR</h6>
+                            <h6>0</h6>
+                          </div>
+                        </div>
+                      }
+                    />
+                  )}
                 </RadioGroup>
                 <Button className="text-light bg-secondary" onClick={handleProceed}>Proceed</Button>
 
