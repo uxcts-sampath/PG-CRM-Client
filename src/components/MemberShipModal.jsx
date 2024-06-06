@@ -26,7 +26,7 @@ const style = {
 
 
 const MemberShipModal = (props) => {
-    const { openWelcomeModal, setOpenWelcomeModal, modalCLose } = props;
+    const { openWelcomeModal, setOpenWelcomeModal, modalCLose, hideFreeOption } = props;
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = sessionStorage.getItem("token");
     const userId = sessionStorage.getItem("userId");
@@ -42,8 +42,6 @@ const MemberShipModal = (props) => {
     const [proceedClicked, setProceedClicked] = useState(false);
     const [showFreeSuccessModal, setShowFreeSuccessModal] = useState(false);
     const [showPaymentReminderModal, setShowPaymentReminderModal] = useState(false);
-    const [suspensionTime, setSuspensionTime] = useState(0);
-    const [hideFreeOption, setHideFreeOption] = useState(false);
 
     const prices = {
         "1-250": {
@@ -63,46 +61,6 @@ const MemberShipModal = (props) => {
     };
 
 
-
-
-
-    //   useEffect(() => {
-    //     const hasActivePaymentPlan = sessionStorage.getItem("hasActivePaymentPlan") === "true";
-    //     const suspensionDate = new Date(sessionStorage.getItem("suspensionDate"));
-    //     const today = new Date();
-
-    //     // Check if the user is not on a payment plan and the suspension date has expired
-    //     if (!hasActivePaymentPlan && suspensionDate <= today) {
-    //       setOpenWelcomeModal(true);
-    //       const hideFree = sessionStorage.getItem("hideFreeOption") === "true";
-    //       setHideFreeOption(hideFree);
-    //     }
-    //   }, []);
-
-
-    //   // Check if the user has already selected a payment plan
-    //   useEffect(() => {
-    //     const hasSelectedOptions = sessionStorage.getItem("hasSelectedOptions") === "true";
-    //     if (hasSelectedOptions) {
-    //       setOpenWelcomeModal(false);
-    //       setOpenPaymentModal(false);
-    //     } else {
-    //       setOpenWelcomeModal(true);
-    //     }
-    //   }, []);
-
-
-
-
-    useEffect(() => {
-        // Calculate suspension time based on user's payment method and update state
-        if (value === "free") {
-            setSuspensionTime(/* Calculate suspension time for free subscription */);
-        } else {
-            setSuspensionTime(0); // No suspension time for paid subscriptions
-        }
-    }, [value]);
-
     useEffect(() => {
         const token = sessionStorage.getItem("token");
         if (token) {
@@ -110,9 +68,6 @@ const MemberShipModal = (props) => {
         }
     }, []);
 
-    const handleSnackbarClose = () => {
-        setShowSnackbar(false);
-    };
 
     const handleChange = (event) => {
         setValue(event.target.value);
@@ -184,14 +139,16 @@ const MemberShipModal = (props) => {
 
                     if (responseData.success) {
                         if (responseData.url) {
+                            console.log('rfsdx', responseData.url, typeof responseData.url)
+                            const redirect_Payment_url = String(responseData.url)
                             // Redirect user to the new URL
-                            window.location.href = responseData.url;
+                            window.open(redirect_Payment_url,"_self")
                         } else {
                             // Payment initiated successfully, handle response as needed
                             const responseData = await response.json();
-                            console.log('rfsdx', responseData)
                             // Redirect user to payment page or handle success case
-                            window.location.href = responseData.data.instrumentResponse.redirectInfo.url;
+                            window.open(responseData.data.instrumentResponse.redirectInfo.url,"_self")
+                            // window.location.href = responseData.data.instrumentResponse.redirectInfo.url;
                         }
                     } else {
                         // Handle payment initiation failure

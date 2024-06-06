@@ -21,12 +21,15 @@ import Salary from './pgstaff/Salary';
 import StaffTimesheet from './attendance/StaffTimesheet';
 import Help from './help/Help';
 import Settings from '../Settings';
+import Payment from '../components/Payment';
 import MemberShipModal from '../components/MemberShipModal';
+
 
 const Dashboard = () => {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const [openWelcomeModal, setOpenWelcomeModal] = useState(false);
+  const [hideFreeOption, setHideFreeOption] = useState(false);
 
   const location = useLocation();
   // const modalCLose = () => {
@@ -37,6 +40,9 @@ const Dashboard = () => {
     try {
       const token = sessionStorage.getItem("token");
       const userId = sessionStorage.getItem("userId");
+      // const hideFree = sessionStorage.getItem("hideFreeOption") === "true";
+      // setHideFreeOption(hideFree);
+
 
       const response = await fetch(`${apiUrl}/api/active/status`, {
         method: "GET",
@@ -52,6 +58,7 @@ const Dashboard = () => {
 
       const data = await response.json();
 
+      setHideFreeOption(data?.hasfreePlan || false);
       if (data?.hasActivePlan) {
         setOpenWelcomeModal(false);
       }
@@ -66,8 +73,12 @@ const Dashboard = () => {
   }
 
   React.useEffect(() => {
-    fetchPlanDetailes();
-  },[location])
+    let currentLocation = window.location;
+
+    if(!currentLocation.pathname.startsWith('/home/payment/status/')){
+      fetchPlanDetailes();
+    }
+  }, [location])
 
 
   const routes = [
@@ -88,17 +99,15 @@ const Dashboard = () => {
     { path: 'pgstaff/salary', element: <Salary /> },
     { path: 'staffattendance', element: <StaffTimesheet /> },
     { path: 'help', element: <Help /> },
-    { path: 'settings', element: <Settings /> }
-
-
-
+    { path: 'settings', element: <Settings /> },
+    { path: 'payment/status/:merchantID/:transactionId', element: <Payment /> }
   ];
 
   const element = useRoutes(routes);
 
   return (
     <>
-      <MemberShipModal openWelcomeModal={openWelcomeModal} setOpenWelcomeModal={setOpenWelcomeModal} modalCLose={() => fetchPlanDetailes()} />
+      <MemberShipModal openWelcomeModal={openWelcomeModal} hideFreeOption={hideFreeOption} setOpenWelcomeModal={setOpenWelcomeModal} modalCLose={() => fetchPlanDetailes()} />
       <div className="container-scroller">
         <Navbar />
         <div className="container-fluid page-body-wrapper">
