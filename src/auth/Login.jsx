@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import logoWt from "/images/logo-wt.png";
 import { useAuth } from "../components/AuthContext";
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-
 
 const Login = ({ onSignin }) => {
   const navigate = useNavigate();
@@ -31,15 +30,12 @@ const Login = ({ onSignin }) => {
     setOpenSnackbar(false);
   };
 
- 
   useEffect(() => {
     if (token) {
       onSignin();
       navigate("/home");
     }
-  }, []);
-
-
+  }, [token, onSignin, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,12 +47,12 @@ const Login = ({ onSignin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password.");
       return;
     }
-  
+
     try {
       // Send login data to the backend for validation
       const response = await fetch(`${apiUrl}/api/signin`, {
@@ -67,67 +63,42 @@ const Login = ({ onSignin }) => {
         },
         body: JSON.stringify(formData),
       });
-    
+
+      const responseData = await response.json();
+
       if (response.status === 200) {
-     
-        const responseData = await response.json();
-        console.log('dgsfdv',responseData)
-     
-        const userId=responseData.user.id;
-        const userName=responseData.user.fullName;
-        const hostelName=responseData.user.hostelName;
-        const refreshToken=responseData.refreshToken;
-        const userSize=responseData.user.userSize;
-        const paymentPlan=responseData.user.hasActivePaymentPlan;
-        const suspensionDate=responseData.user.suspensionDate;
-        const hideFreeOption = responseData.user.hideFreeOption;
+        const {
+          token, 
+          refreshToken, 
+          user: {
+            id: userId, 
+            fullName: userName, 
+            hostelName, 
+            userSize, 
+            hasActivePaymentPlan: paymentPlan, 
+            suspensionDate, 
+            hideFreeOption
+          }
+        } = responseData;
 
-        console.log('usersize',userSize)
-      
-        const { token } = responseData;
-       
         sessionStorage.setItem("token", token);
-
-        sessionStorage.setItem("userId",userId)
-
-        sessionStorage.setItem("userName",userName)
-
-        sessionStorage.setItem("hostelName",hostelName)
-
-        sessionStorage.setItem("refreshToken",refreshToken)
-
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("userName", userName);
+        sessionStorage.setItem("hostelName", hostelName);
+        sessionStorage.setItem("refreshToken", refreshToken);
         sessionStorage.setItem("userSize", userSize);
+        sessionStorage.setItem("paymentPlan", paymentPlan);
+        sessionStorage.setItem("suspensionDate", suspensionDate);
+        sessionStorage.setItem("hideFreeOption", hideFreeOption);
 
-        sessionStorage.setItem("paymentPlan",paymentPlan)
-
-        sessionStorage.setItem("suspensionDate",suspensionDate)
-
-        sessionStorage.setItem("hideFreeOption",hideFreeOption)
-
-      // Trigger the onSignin callback to update authentication state
+        // Trigger the onSignin callback to update authentication state
         onSignin();
 
         // Redirect to the dashboard after successful login
         navigate("/home");
-
-       setOpen(true)
-       
       } else {
-        const responseData = await response.json();
-      
         console.log("Login failed", response.status, responseData.error);
-  
-        if (response.status === 401) {
-          if (responseData.error === "UserNotFound") {
-            setError("Email does not exist.");
-          } else if (responseData.error === "InvalidPassword") {
-            setError("Password is incorrect.");
-          } else {
-            setError("Bad credentials. Please check your password.");
-          }
-        } else {
-          setError("Entered Email is incorrect");
-        }
+        handleErrorResponse(response.status, responseData.message);
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -135,10 +106,44 @@ const Login = ({ onSignin }) => {
     }
   };
 
-  
+  const handleErrorResponse = (status, message) => {
+    switch (status) {
+      case 404:
+        if (message === "User not found") {
+          setError("Email does not exist.");
+        } else if (message === "Invalid password") {
+          setError("Password is incorrect.");
+        } else {
+          setError("Bad credentials. Please check your password.");
+        }
+        break;
+        case 401:
+         if (message === "Invalid password") {
+          setError("Password is incorrect.");
+        } else {
+          setError("Bad credentials. Please check your password.");
+        }
 
-  
-  
+          break;
+      case 403:
+        if (message === "Your account is pending approval.") {
+          setError("Your account is pending approval.");
+        } else if (message === "Your account is on hold. Please contact support.") {
+          setError("Your account is on hold. Please contact support.");
+        } else if (message === "This account has been suspended.") {
+          setError("Your account is suspended.");
+        } else {
+          setError("Access denied.");
+        }
+        break;
+      case 400:
+        setError("Invalid request. Please check your input.");
+        break;
+      default:
+        setError("An error occurred. Please try again later.");
+    }
+  };
+
   return (
     <>
       <div className="container-scroller">
@@ -182,7 +187,7 @@ const Login = ({ onSignin }) => {
                       >
                         SIGN IN
                       </button>
-                      {error && <div className="text-danger mt-2">{error}</div>}    
+                      {error && <div className="text-danger mt-2">{error}</div>}
                     </div>
                     <div className="my-2 d-flex justify-content-between align-items-center">
                       <div className="form-check">
@@ -191,13 +196,13 @@ const Login = ({ onSignin }) => {
                           Keep me signed in
                         </label>
                       </div>
-                      <a  className="auth-link text-black" style={{cursor:"pointer"}} onClick={()=>navigate("/forgotpassword")}>
+                      <a className="auth-link text-black" style={{ cursor: "pointer" }} onClick={() => navigate("/forgotpassword")}>
                         Forgot password?
                       </a>
                     </div>
                     <div className="text-center mt-4 font-weight-light">
                       Don't have an account?{" "}
-                      <a style={{cursor:'pointer'}} onClick={()=>navigate("/register")} className="text-primary">
+                      <a style={{ cursor: 'pointer' }} onClick={() => navigate("/register")} className="text-primary">
                         Create
                       </a>
                     </div>
@@ -221,7 +226,7 @@ const Login = ({ onSignin }) => {
         }
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'right', 
+          horizontal: 'right',
         }}
       />
     </>

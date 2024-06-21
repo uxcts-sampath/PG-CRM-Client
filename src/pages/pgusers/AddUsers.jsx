@@ -28,6 +28,9 @@ const AddUsers=()=> {
 
   const today = new Date().toISOString().slice(0, 10);
 
+
+  const [profilePhoto,setProfilePhoto]=useState()
+
   
   
   
@@ -64,94 +67,47 @@ const AddUsers=()=> {
 
 
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  
-  //   if (name === 'requireRoomType') {
-  //     // Handle room type change
-  //     // Update form data with selected room type
-  //     setFormData(prevState => ({ ...prevState, [name]: value }));
-
-      
-  //     // Handle room type specific logic
-  //     if (value === 'single') {
-  //       // If single room type selected, show only single bed rooms
-  //       const singleBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'single'));
-  //       setRooms(singleBedRooms);
-  //     } else if (value === 'shared') {
-  //       // If shared room type selected, show rooms with more than one bed
-  //       const sharedBedRooms = floors.flatMap(floor => floor.rooms.filter(room => room.type === 'shared'));
-  //       setRooms(sharedBedRooms);
-  //     }
-  //     // Clear room and bed selections
-  //     setFormData(prevState => ({ ...prevState, floor: '', room: '', bed: '' }));
-  //   } else if (name === 'floor') {
-  //     // Handle floor selection
-  //     // Update form data with selected floor
-  //     setFormData(prevState => ({ ...prevState, [name]: value }));
-  //   } else if (name === 'room') {
-  //     // Handle room selection
-  //     // Update form data with selected room
-  //     setFormData(prevState => ({ ...prevState, [name]: value }));
-  //     // Find the selected room
-  //     const selectedRoom = rooms.find(room => room._id === value);
-  //     // Filter out occupied beds from selected room
-  //     const notOccupiedBeds = selectedRoom ? selectedRoom.beds.filter(bed => bed.status !== 'occupied') : [];
-  //     setBeds(notOccupiedBeds);
-  //   } else if (name === 'bed') {
-  //     // Handle bed selection
-  //     setFormData(prevState => ({ ...prevState, [name]: value }));
-  //     setErrors({ ...errors, [name]: '' }); // Clear error for the field on change
-  //   }
-  //    else {
-  //     // Handle other form field changes
-  //     setFormData(prevState => ({ ...prevState, [name]: value }));
-  //   }
-    
-  // };
-
+ 
 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
   
-    if (name === 'requireRoomType') {
-     
-      setFormData(prevState => ({ ...prevState, [name]: value }));  
-      // Handle room type specific logic
+   
+  
+     if (name === 'requireRoomType') {
+      // Handle room type change
       if (value === 'single' && floors) {
-
-      
-
         const singleBedRooms = floors.flatMap(floor =>
           floor.floors.flatMap(floorData =>
-              (floorData.rooms || []).filter(room => room.type === "single")
+            (floorData.rooms || []).filter(room => room.type === "single")
           )
-      );
-      
-      console.log(singleBedRooms); 
+        );
         setRooms(singleBedRooms);
-        setFormData(prevState => ({ ...prevState, amount: singleBedPrice }));
-    }
-    
-    else if (value === 'shared' && floors) {
-
-      const sharedBedRooms = floors.flatMap(floor =>
-        floor.floors.flatMap(floorData =>
+        setFormData(prevState => ({
+          ...prevState,
+          [name]: value,
+          amount: singleBedPrice,
+          floor: '',
+          room: '',
+          bed: ''
+        }));
+      } else if (value === 'shared' && floors) {
+        const sharedBedRooms = floors.flatMap(floor =>
+          floor.floors.flatMap(floorData =>
             (floorData.rooms || []).filter(room => room.type === "shared")
-        )
-    );
-
-    console.log(sharedBedRooms)
-
-    setRooms(sharedBedRooms)
-      // Set amount based on shared bed price
-      setFormData(prevState => ({ ...prevState, amount: sharingBedPrice }));
-  }
-
-  console.log(formData)
-      // Clear room and bed selections
-      setFormData(prevState => ({ ...prevState, floor: '', room: '', bed: '' }));
+          )
+        );
+        setRooms(sharedBedRooms);
+        setFormData(prevState => ({
+          ...prevState,
+          [name]: value,
+          amount: sharingBedPrice,
+          floor: '',
+          room: '',
+          bed: ''
+        }));
+      }
     } else if (name === 'floor') {
       // Handle floor selection
       // Update form data with selected floor
@@ -184,8 +140,14 @@ const AddUsers=()=> {
     }
   };
   
+  console.log(formData)
   
-  
+
+  // Handle file change event to set profile photo
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  setProfilePhoto(file);  // Assuming setProfilePhoto is a state setter function
+};
 
 
   useEffect(() => {
@@ -272,96 +234,94 @@ const AddUsers=()=> {
   };
 
   
-
-
   
 
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!validateForm()) {
+
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  if (!validateForm()) {
       return;
-    }
+  }
 
-    try {
-      // Construct the payload with updated user data
-      const formattedData = {
-        
-        userType: formData.userType,
-        name: formData.name,
-        fatherName: formData.fatherName,
-        mobile: formData.mobile,
-        age: parseInt(formData.age),
-        referredBy: formData.referredBy,
-        aadharNumber: formData.aadharNumber,
-        purposeFor: formData.purposeFor,
-        address: formData.address,
-        residenceCity: formData.residenceCity,
-        state: formData.state,
-        referenceMobile:formData.referenceMobile,
-        requireRoomType: formData.requireRoomType,
-        // floor: formData.floor,
-        room: formData.room,
-        bed: parseInt(formData.bed),
-        billingCycle: formData.billingCycle,
-        billingDate: formData.billingDate,
-        paymentType:formData.paymentType,
-        amount: parseInt(formData.amount),
-        billingAmount:parseInt(formData.billingAmount),
-        parentPhoneNumber:parseInt(formData.parentPhoneNumber),
-        parentEmail:formData.parentEmail,
-        payment:formData.payment
-      };
-  
+  const formDataToSend = {
+      userType: formData.userType,
+      name: formData.name,
+      fatherName: formData.fatherName,
+      mobile: formData.mobile,
+      age: parseInt(formData.age),
+      referredBy: formData.referredBy,
+      aadharNumber: formData.aadharNumber,
+      purposeFor: formData.purposeFor,
+      address: formData.address,
+      residenceCity: formData.residenceCity,
+      state: formData.state,
+      referenceMobile: formData.referenceMobile,
+      requireRoomType: formData.requireRoomType,
+      room: formData.room,
+      bed: parseInt(formData.bed),
+      billingCycle: formData.billingCycle,
+      billingDate: formData.billingDate,
+      paymentType: formData.paymentType,
+      amount: parseInt(formData.amount),
+      billingAmount: parseInt(formData.billingAmount),
+      parentPhoneNumber: parseInt(formData.parentPhoneNumber),
+      parentEmail: formData.parentEmail,
+      payment: formData.payment
+  };
+
+  console.log('Form data to send:', formDataToSend);
+
+  const formDataForApi = new FormData();
+
+  Object.entries(formDataToSend).forEach(([key, value]) => {
+      formDataForApi.append(key, value);
+  });
+
+  if (profilePhoto) {
+      formDataForApi.append('profilePhoto', profilePhoto);
+  }
+
+  try {
       let url = `${apiUrl}/api/createhosteluser`;
       let method = 'POST';
-  
-      if (location.state && location.state.user) {
-        // If user data is available, it's an update operation
-        url = `${apiUrl}/api/updatehosteluser/${formData.hostelUserId}`;
-        method = 'PUT';
-      }
-  
-     
-  
+
       const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formattedData),
+          method: method,
+          headers: {
+              'Authorization': `Bearer ${token}`,
+          },
+          body: formDataForApi,
       });
-  
+
       const responseData = await response.json();
-  
+
+
       if (response.ok) {
-        if (response.status === 201) {
-          // Update the selected bed status to 'occupied'
-          const selectedRoom = floors.find(floor => floor._id === formData.floor)?.rooms.find(room => room._id === formData.room);
-          const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === formData.bed);
-          if (selectedBed) { 
-              selectedBed.status = 'occupied';
+          if (response.status === 201) {
+              console.log('User created successfully:', responseData);
+              
+              const selectedRoom = floors.find(room => room._id === formData.room);
+              const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === parseInt(formData.bed));
+              if (selectedBed) { 
+                  selectedBed.status = 'occupied';
+              }
+              navigate('/home/pgusers'); // Navigate to the desired page on success
+          } else {
+              console.log('User created but bed allocation failed:', responseData);
+              alert('Selected bed is not available. Please choose another.');
           }
-  
-          console.log('Success:', responseData);
-          navigate('/home/pgusers'); // Navigate to the desired page on success
-        } else {
-          console.log('User created but bed allocation failed:', responseData);
-          navigate('/home/pgusers'); // Navigate to the desired page regardless
-        }
       } else {
-        // Handle error for unsuccessful response
-        console.error('Error sending data:', responseData.message);
-        alert('An error occurred while submitting the form. Please try again.');
+          console.error('Error sending data:', responseData.message);
+          alert('An error occurred while submitting the form. Please try again.');
       }
-    } catch (error) {
+  } catch (error) {
       console.error('Error sending data:', error.message);
       alert('An error occurred while submitting the form. Please try again.');
-    }
-  };
-  
-  
+  }
+};
+
+
 
  
 
@@ -689,7 +649,7 @@ return(
       autoComplete="profile-photo"
       variant="standard"
       value={formData.profilePhoto}
-      onChange={handleChange}
+      onChange={handleFileChange}
     />
   </FormControl>
 </Grid>

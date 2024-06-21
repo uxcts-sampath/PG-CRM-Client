@@ -174,7 +174,7 @@ const Guests = () => {
                         <div className="d-flex">
                           <img
                             className="img-sm rounded-circle mb-md-0 mr-2"
-                            src={userprofileImage}
+                            src={`${apiUrl}/images/${guest.profilePhoto}`}
                             alt="profile image"
                           />
                           <div>

@@ -48,6 +48,7 @@ const Students = () => {
         return response.json();
       })
       .then(data => {
+        console.log("Student Data:", data); // Log the received data to check the structure
         setStudentData(data);
       })
       .catch(error => {
@@ -55,7 +56,8 @@ const Students = () => {
       });
   }
 
-  console.log('gfdv',studentData)
+  console.log(studentData)
+
 
   useEffect(() => {
     handleStudentData();
@@ -183,11 +185,11 @@ const Students = () => {
                        <tr key={student._id}>
                        <td>
                          <div className="d-flex">
-                           <img
-                             className="img-sm rounded-circle mb-md-0 mr-2"
-                             src={userprofileImage}
-                             alt="profile image"
-                           />
+                         <img
+                              className="img-sm rounded-circle mb-md-0 mr-2"
+                              src={`${apiUrl}/images/${student.profilePhoto}`}
+                              alt="profile image"
+                            />
                            <div>
                              <div className=" mt-2">{student.name}</div>
                            </div>

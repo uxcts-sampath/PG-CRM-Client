@@ -181,7 +181,7 @@ const handleDelete = async (workingEmpId) => {
                         <div className="d-flex">
                           <img
                             className="img-sm rounded-circle mb-md-0 mr-2"
-                            src={userprofileImage}
+                            src={`${apiUrl}/images/${workingEmp.profilePhoto}`}
                             alt="profile image"
                           />
                           <div>
