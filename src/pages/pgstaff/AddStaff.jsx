@@ -148,11 +148,11 @@ const AddStaff = () => {
                                             variant="standard"
                                             fullWidth
                                             required
-                                            value={formData.staffType}
+                                            value={formData.staffType || "staff type"}
                                             onChange={handleChange}
                                             error={Boolean(errors.staffType)}
                                         >
-                                            <MenuItem value="" disabled>Select Staff Type</MenuItem>
+                                            <MenuItem value="staff type" disabled>Select Staff Type</MenuItem>
                                             <MenuItem value="Manager">Manager</MenuItem>
                                             <MenuItem value="Reception">Reception</MenuItem>
                                             <MenuItem value="Chief Warden">Chief Warden</MenuItem>
@@ -297,11 +297,11 @@ const AddStaff = () => {
                                             label="Shift Type"
                                             variant="standard"
                                             fullWidth
-                                            value={formData.shifts}
+                                            value={formData.shifts || "shift type"}
                                             onChange={handleChange}
                                             error={Boolean(errors.shifts)}
                                         >
-                                            <MenuItem value="" disabled>Shift Type</MenuItem>
+                                            <MenuItem value="shift type" disabled>Shift Type</MenuItem>
                                             <MenuItem value="Day">Day</MenuItem>
                                             <MenuItem value="Night">Night</MenuItem>
                                             <MenuItem value="Full Day">Full Day</MenuItem>
@@ -316,11 +316,11 @@ const AddStaff = () => {
                                             variant="standard"
                                             fullWidth
                                             required
-                                            value={formData.billingCycle}
+                                            value={formData.billingCycle || "salary type"}
                                             onChange={handleChange}
                                             error={Boolean(errors.billingCycle)}
                                         >
-                                            <MenuItem value="" disabled>Salary Type</MenuItem>
+                                            <MenuItem value="salary type" disabled>Salary Type</MenuItem>
                                             <MenuItem value="monthly">Monthly</MenuItem>
                                             <MenuItem value="quarterly">Quarterly</MenuItem>
                                             <MenuItem value="yearly">Yearly</MenuItem>

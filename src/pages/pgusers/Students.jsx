@@ -1,8 +1,12 @@
 import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 import ClearIcon from '@mui/icons-material/Clear';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
+import { Button } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,6 +16,35 @@ import userprofileImage from "/theme/images/faces/face29.png";
 
 const Students = () => {
 
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '20%',
+    bgcolor: 'white',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '30px',
+};
+
+const deleteModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 300,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  borderRadius: '8px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
   const token = sessionStorage.getItem("token");
   const apiUrl = process.env.REACT_APP_API_URL;
   const [studentData, setStudentData] = useState([]);
@@ -19,10 +52,27 @@ const Students = () => {
   const navigate = useNavigate();
   const [userOpen, setUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteOpen,setDeleteOpen]=useState(false)
+
+
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
  
 
   const handleUserOpen = () => setUserOpen(true);
   const handleUserClose = () => setUserOpen(false);
+
+  const handleDeleteOpen =()=>setDeleteOpen(true);
+  const handleDeleteClose =()=>setDeleteOpen(false)
 
   const handleEditAction = (student) => {
     navigate('addusers', { state: { user: student } });
@@ -130,6 +180,45 @@ const Students = () => {
       });
   }
   
+
+  const handleDeletePhoto = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const response = await fetch(`${apiUrl}/api/hosteluser/${selectedUser._id}/deletephoto`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+
+
+      if (!response.ok) {
+        throw new Error('Failed to delete profile photo');
+      }
+
+      // Update selected user to remove profile photo locally
+      setSelectedUser(prevUser => ({
+        ...prevUser,
+        profilePhoto: null // Assuming your UI can handle null profile photo gracefully
+      }));
+      setStudentData(prevData => {
+        return prevData.map(student => {
+          if (student._id === selectedUser._id) {
+            return { ...student, profilePhoto: null };
+          }
+          return student;
+        });
+      });
+      closeModal(); // Close the modal on success
+
+    } catch (error) {
+      console.error("Error deleting profile photo:", error.message);
+    }
+  };
+
  
 
   
@@ -159,22 +248,11 @@ const Students = () => {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th>
-                        <div className="d-flex">
-                          <div>
-                            <div className="m-l-2"> Name</div>
-                          </div>
-                        </div>
-                      </th>
-                      <th>Mobile</th>
-
-                      <th>Studing at</th>
-
-                      <th>City From</th>
-
-                      <th>State</th>
-                      <th>Room</th>
+                      <th>Image</th>
                       <th>Student ID</th>
+                      <th>Name</th>
+                      <th>Mobile</th>
+                      <th>Room</th>
                       <th>Billing Date</th>
                       <th>Fee Status</th>                    
                       <th>Action</th>
@@ -184,38 +262,67 @@ const Students = () => {
                     {studentData?.length>0 && studentData?.map((student)=>(
                        <tr key={student._id}>
                        <td>
-                         <div className="d-flex">
-                         <img
-                              className="img-sm rounded-circle mb-md-0 mr-2"
-                              src={`${apiUrl}/images/${student.profilePhoto}`}
-                              alt="profile image"
-                            />
-                           <div>
-                             <div className=" mt-2">{student.name}</div>
-                           </div>
+                         <div className="" style={{display:'flex'}}>
+                        
+
+                         <div className={`user-info-item ${!student.profilePhoto ? 'no-photo' : ''}`}>
+                {student.profilePhoto ? (
+                    <>
+                        <img
+                            className="img-sm rounded-circle mb-md-0 mr-2"
+                            src={`${apiUrl}/images/${student.profilePhoto}`}
+                            alt="Profile Photo"
+                            onClick={() => openModal(student)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    </>
+                ) : (
+                    <div className="" style={{ color: 'grey', fontSize: '50px' }}>
+                        <AccountCircleRoundedIcon style={{ fontSize: 'inherit' }} />
+                    </div>
+                )}
+            </div>
+
+            <Modal
+                open={isModalOpen}
+                onClose={closeModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <button onClick={closeModal} className="btn btn-sm border mb-2" style={{ float: 'right' }}><CloseIcon/></button>
+                    {student.profilePhoto && (
+        <button className="btn btn-sm border mb-2" onClick={handleDeletePhoto}>
+            <DeleteIcon />
+        </button>
+    )}
+                    {student.profilePhoto && (
+                        <img
+                            src={`${apiUrl}/images/${student.profilePhoto}`}
+                            alt="Profile Photo"
+                            style={{ width: '100%' }}
+                        />
+                    )}
+                </Box>
+            </Modal>
+                           
                          </div>
-                       </td>
-                       <td>
-                         <div className="  mt-1">{student.mobile} </div>
-                       </td>
- 
-                       <td>
-                         <div className=" mt-1">{student.studyingAt} </div>
-                       </td>
- 
-                       <td>
-                         <div className=" mt-1">{student.residenceCity} </div>
-                       </td>
- 
-                       <td>
-                         <div className=" mt-1">{student.state}</div>
-                       </td>
-                       <td>
-                         <div className=" mt-1">{student.roomNumber}</div>
                        </td>
                        <td>
                        <div className=" mt-1">{student.userReferenceId} </div>
                        </td>
+                       <td><div>
+                             <div className=" mt-2">{student.name}</div>
+                           </div></td>
+                       <td>
+                         <div className="  mt-1">{student.mobile} </div>
+                       </td>
+ 
+                     
+                       <td>
+                         <div className=" mt-1">{student.roomNumber}</div>
+                       </td>
+                       
                        <td>
                          <div className=" text-success  mt-1">Pending</div>
                        </td>
@@ -224,6 +331,7 @@ const Students = () => {
                        </td>
                        <td>
                          <div className="font-weight-bold  mt-1">
+                         <button className="btn btn-sm border mr-2" onClick={handleDeleteOpen}><DeleteIcon/></button>
                          <button
                             type="button"
                             className="btn btn-sm border"
@@ -231,8 +339,40 @@ const Students = () => {
                             <EditIcon/>
                           </button>
                           <button   className="btn btn-sm border ml-2" onClick={() => handleViewAction(student)}><VisibilityIcon/></button>
-                          <button className="btn btn-sm border ml-2" onClick={()=>handleDelete(student._id)}><DeleteIcon/></button>
                          </div>
+                         <Modal
+    open={deleteOpen}
+    onClose={handleDeleteClose}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <Box sx={deleteModalStyle}>
+      <Typography variant="h6" component="h2" gutterBottom>
+        Delete Hostel User?
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
+      <Button
+          variant="contained"
+          color="error"
+          onClick={() => handleDelete(student._id)}
+          startIcon={<DeleteIcon />}
+          sx={{ mr: 1 }}
+        >
+          Delete
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleDeleteClose}
+          startIcon={<CloseIcon />}
+         
+        >
+          Cancel
+        </Button>
+       
+      </Box>
+    </Box>
+  </Modal>
                        </td>
                        
                      </tr>
@@ -292,10 +432,10 @@ const Students = () => {
             <span className="info-value">{selectedUser.residenceCity}</span>
           </div>
           <div className="user-info-item">
-  <span className="info-label">Room Number:</span>
-  <span className="info-value">{selectedUser.roomNumber}</span>
-</div>
-
+         <span className="info-label">Room Number:</span>
+          <span className="info-value">{selectedUser.roomNumber}</span>
+      </div>
+     
 
         </>
       )}

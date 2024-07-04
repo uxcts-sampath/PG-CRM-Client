@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
+  const [totalExpense, setTotalExpense] = useState(0); // Initialize totalExpense state
   const token = sessionStorage.getItem("token");
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -11,6 +12,14 @@ const Expenses = () => {
     category: "",
   });
 
+  const [showAll, setShowAll] = useState(false);
+
+  const displayedExpenses = showAll ? expenses : expenses.slice(0, 4);
+
+  const toggleView = () => {
+    setShowAll(!showAll);
+  };
+
   useEffect(() => {
     // Fetch expenses from the server when the component mounts
     fetchExpenses();
@@ -18,9 +27,9 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/getexpenses`,{
+      const response = await fetch(`${apiUrl}/api/getexpenses`, {
         method: 'GET',
-        headers: {  
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
@@ -29,7 +38,11 @@ const Expenses = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setExpenses(data);
+      console.log("Fetched data:", data); // Log the fetched data to inspect
+      setExpenses(data); // Update expenses state with fetched data
+      // Calculate total expense
+      const total = data.reduce((acc, expense) => acc + expense.amount, 0);
+      setTotalExpense(total);
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
@@ -64,55 +77,95 @@ const Expenses = () => {
     }
   };
 
+  
+
   return (
     <div>
-      <h2>Add New Expense</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="amount">Amount:</label>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            value={newExpense.amount}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description:</label>
-          <input
-            type="text"
-            id="description"
-            name="description"
-            value={newExpense.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="category">Category:</label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            value={newExpense.category}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Add Expense</button>
-      </form>
-      <h2>Expenses List</h2>
-      <ul>
-        {expenses.map((expense) => (
-          <li key={expense._id}>
-            <div>Amount: {expense.amount}</div>
-            <div>Description: {expense.description}</div>
-            <div>Category: {expense.category}</div>
-          </li>
-        ))}
+     <div className="row">
+     <div className="col-md-6">
+      <h2>Expenses</h2>
+      </div>
+<div className="col-md-6">
+<h2 >Total Expense: {totalExpense}</h2>
+</div>     
+     </div>
+
+     <div className="row">
+     <div className="col-md-6 mt-3">
+      <h4>Last Transactions</h4>
+      <ul className="list-group mt-2">
+        {displayedExpenses.length > 0 ? (
+          displayedExpenses.map((expense) => (
+            <li key={expense._id} className="list-group-item">
+              <div><strong>Amount:</strong> {expense.amount}</div>
+              <div><strong>Description:</strong> {expense.description}</div>
+              <div><strong>Category:</strong> {expense.category}</div>
+              {expense.category === 'Salary' && (
+                <div><strong>User ID:</strong> {expense.userId}</div>
+              )}
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item">No expenses found</li>
+        )}
       </ul>
+      {expenses.length > 4 && (
+        <div className="d-flex justify-content-end mt-3">
+          <button className="btn btn-primary" onClick={toggleView}>
+            {showAll ? 'Hide' : 'View More'}
+          </button>
+        </div>
+      )}
+    </div>
+
+      <div className="col-md-6 mt-3">
+  <h4>Add Expenses</h4>
+  <form onSubmit={handleSubmit}>
+    <div className="mt-2 w-100 ">
+      <input
+        className="form-control border-0"
+        placeholder="Amount *"
+        type="number"
+        id="amount"
+        name="amount"
+        value={newExpense.amount}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div className="mt-2 w-100">
+      <input
+        className="form-control border-0"
+        placeholder="Category *"
+        type="text"
+        id="category"
+        name="category"
+        value={newExpense.category}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div className="mt-2 w-100">
+      <input
+        className="form-control border-0"
+        placeholder="Description"
+        type="text"
+        id="description"
+        name="description"
+        value={newExpense.description}
+        onChange={handleChange}
+      />
+    </div>
+    <div className="d-flex justify-content-end mt-3">
+      <button className="btn btn-primary  w-100" type="submit">Submit</button>
+    </div>
+      </form>
+</div>
+
+     </div>
+
+
+     
     </div>
   );
 };

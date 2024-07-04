@@ -238,11 +238,13 @@ const handleFileChange = (event) => {
 
 
 
-const handleSubmit = async (event) => {
+const handleSubmit = async (event) => { 
   event.preventDefault();
   if (!validateForm()) {
       return;
   }
+
+  console.log('Form data before sending:', formData); // Log formData before sending
 
   const formDataToSend = {
       userType: formData.userType,
@@ -264,7 +266,7 @@ const handleSubmit = async (event) => {
       billingDate: formData.billingDate,
       paymentType: formData.paymentType,
       amount: parseInt(formData.amount),
-      billingAmount: parseInt(formData.billingAmount),
+      billingAmount: parseFloat(formData.billingAmount), // Ensure it's a number
       parentPhoneNumber: parseInt(formData.parentPhoneNumber),
       parentEmail: formData.parentEmail,
       payment: formData.payment
@@ -272,19 +274,26 @@ const handleSubmit = async (event) => {
 
   console.log('Form data to send:', formDataToSend);
 
-  const formDataForApi = new FormData();
+  let formDataForApi = new FormData();
 
   Object.entries(formDataToSend).forEach(([key, value]) => {
-      formDataForApi.append(key, value);
+      formDataForApi.append(key, value ?? '');
   });
 
   if (profilePhoto) {
       formDataForApi.append('profilePhoto', profilePhoto);
   }
 
+
+
   try {
       let url = `${apiUrl}/api/createhosteluser`;
       let method = 'POST';
+
+      if (formData.hostelUserId) {
+        url = `${apiUrl}/api/updatehosteluser/${formData.hostelUserId}`;
+        method = 'PUT';
+      }
 
       const response = await fetch(url, {
           method: method,
@@ -296,16 +305,22 @@ const handleSubmit = async (event) => {
 
       const responseData = await response.json();
 
+        console.log('Response from backend:', responseData);
+
 
       if (response.ok) {
-          if (response.status === 201) {
-              console.log('User created successfully:', responseData);
-              
+        if (response.status === 201 || response.status === 200) {
+          if (method === 'POST') {
+            console.log('User created successfully:', responseData);
+
               const selectedRoom = floors.find(room => room._id === formData.room);
               const selectedBed = selectedRoom?.beds.find(bed => bed.bedNumber === parseInt(formData.bed));
               if (selectedBed) { 
                   selectedBed.status = 'occupied';
               }
+            }else if (method === 'PUT') {
+              console.log('User updated successfully:', responseData);
+            }
               navigate('/home/pgusers'); // Navigate to the desired page on success
           } else {
               console.log('User created but bed allocation failed:', responseData);
@@ -858,7 +873,7 @@ return(
         <div className='col-12 mb-5'>
           <div className="d-flex align-items-center justify-content-md-end">
         <Button variant="outlined" color="secondary"  className='mr-3' onClick={()=>navigate('/home/pgusers')}>Cancel</Button>
-        <Button variant="contained" color="secondary" onClick={handleSubmit}>Create</Button>
+        <Button variant="contained" color="secondary" onClick={handleSubmit}>{location.state && location.state.user ? "Update" : "Create"}</Button>
         </div>
         </div>
     </div>
