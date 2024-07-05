@@ -60,7 +60,6 @@ const AddStaff = () => {
     };
 
     const handleChange = (event) => {
-        console.log(`Field changed: ${event.target.name}, Value: ${event.target.value}`);
         setFormData({
             ...formData,
             [event.target.name]: event.target.value,
@@ -119,7 +118,6 @@ const AddStaff = () => {
             }
 
             const data = await response.json();
-            console.log('Success:', data);
             navigate('/home/pgstaff');
         } catch (error) {
             console.error('Error sending data:', error.message);

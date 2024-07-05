@@ -65,7 +65,6 @@ const Dashboard = () => {
       else {
         setOpenWelcomeModal(true);
       }
-      console.log('Success:', data);
 
     } catch (error) {
       console.error('Error:', error);

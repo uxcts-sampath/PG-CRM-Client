@@ -100,7 +100,6 @@ const handleSubmit = async () => {
     }
 
     const data = await response.json();
-    console.log('Success:', data);
     
     handleFloorClose();
 
@@ -162,7 +161,6 @@ const handleSubmit = async () => {
       }
   
       const data = await response.json();
-      console.log('Success:', data);
       handleRoomClose();
       
       floorData();
@@ -191,7 +189,6 @@ const handleSubmit = async () => {
     })
     .then(data => {
       setFloors(data);   
-      console.log(data)   
     })
     .catch(error => console.error('Error fetching floor data:', error));
   };

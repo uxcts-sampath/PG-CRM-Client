@@ -98,7 +98,6 @@ const deleteModalStyle = {
         return response.json();
       })
       .then(data => {
-        console.log("Student Data:", data); // Log the received data to check the structure
         setStudentData(data);
       })
       .catch(error => {
@@ -106,7 +105,6 @@ const deleteModalStyle = {
       });
   }
 
-  console.log(studentData)
 
 
   useEffect(() => {

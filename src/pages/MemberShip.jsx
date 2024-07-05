@@ -34,7 +34,6 @@ const MemberShip = () => {
     MembershipData()
   },[])
 
-  console.log('dfdv',membershipData);
   
   
 

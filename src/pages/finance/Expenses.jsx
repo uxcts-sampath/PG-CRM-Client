@@ -5,6 +5,7 @@ const Expenses = () => {
   const [totalExpense, setTotalExpense] = useState(0); // Initialize totalExpense state
   const token = sessionStorage.getItem("token");
   const apiUrl = process.env.REACT_APP_API_URL;
+  const userId = sessionStorage.getItem("userId"); // Assuming userId is stored in session storage
 
   const [newExpense, setNewExpense] = useState({
     amount: "",
@@ -14,7 +15,7 @@ const Expenses = () => {
 
   const [showAll, setShowAll] = useState(false);
 
-  const displayedExpenses = showAll ? expenses : expenses.slice(0, 4);
+  const displayedExpenses = showAll ? expenses : expenses.slice(0, 4).sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date in descending order
 
   const toggleView = () => {
     setShowAll(!showAll);
@@ -27,7 +28,7 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/getexpenses`, {
+      const response = await fetch(`${apiUrl}/api/getexpenses?userId=${userId}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -77,95 +78,90 @@ const Expenses = () => {
     }
   };
 
-  
-
   return (
     <div>
-     <div className="row">
-     <div className="col-md-6">
-      <h2>Expenses</h2>
-      </div>
-<div className="col-md-6">
-<h2 >Total Expense: {totalExpense}</h2>
-</div>     
-     </div>
-
-     <div className="row">
-     <div className="col-md-6 mt-3">
-      <h4>Last Transactions</h4>
-      <ul className="list-group mt-2">
-        {displayedExpenses.length > 0 ? (
-          displayedExpenses.map((expense) => (
-            <li key={expense._id} className="list-group-item">
-              <div><strong>Amount:</strong> {expense.amount}</div>
-              <div><strong>Description:</strong> {expense.description}</div>
-              <div><strong>Category:</strong> {expense.category}</div>
-              {expense.category === 'Salary' && (
-                <div><strong>User ID:</strong> {expense.userId}</div>
-              )}
-            </li>
-          ))
-        ) : (
-          <li className="list-group-item">No expenses found</li>
-        )}
-      </ul>
-      {expenses.length > 4 && (
-        <div className="d-flex justify-content-end mt-3">
-          <button className="btn btn-primary" onClick={toggleView}>
-            {showAll ? 'Hide' : 'View More'}
-          </button>
+      <div className="row">
+        <div className="col-md-6">
+          <h2>Expenses</h2>
         </div>
-      )}
-    </div>
+        <div className="col-md-6">
+          <h2>Total Expense: {totalExpense}</h2>
+        </div>
+      </div>
 
-      <div className="col-md-6 mt-3">
-  <h4>Add Expenses</h4>
-  <form onSubmit={handleSubmit}>
-    <div className="mt-2 w-100 ">
-      <input
-        className="form-control border-0"
-        placeholder="Amount *"
-        type="number"
-        id="amount"
-        name="amount"
-        value={newExpense.amount}
-        onChange={handleChange}
-        required
-      />
-    </div>
-    <div className="mt-2 w-100">
-      <input
-        className="form-control border-0"
-        placeholder="Category *"
-        type="text"
-        id="category"
-        name="category"
-        value={newExpense.category}
-        onChange={handleChange}
-        required
-      />
-    </div>
-    <div className="mt-2 w-100">
-      <input
-        className="form-control border-0"
-        placeholder="Description"
-        type="text"
-        id="description"
-        name="description"
-        value={newExpense.description}
-        onChange={handleChange}
-      />
-    </div>
-    <div className="d-flex justify-content-end mt-3">
-      <button className="btn btn-primary  w-100" type="submit">Submit</button>
-    </div>
-      </form>
-</div>
+      <div className="row">
+        <div className="col-md-6 mt-3">
+          <h4>Last Transactions</h4>
+          <ul className="list-group mt-2">
+            {displayedExpenses.length > 0 ? (
+              displayedExpenses.map((expense) => (
+                <li key={expense._id} className="list-group-item">
+                  <div><strong>Amount:</strong> {expense.amount}</div>
+                  <div><strong>Description:</strong> {expense.description}</div>
+                  <div><strong>Category:</strong> {expense.category}</div>
+                  <div><strong>Date:</strong> {expense.date}</div>
+                  {expense.category === 'Salary' && (
+                    <div><strong>User ID:</strong> {expense.userId}</div>
+                  )}
+                </li>
+              ))
+            ) : (
+              <li className="list-group-item">No expenses found</li>
+            )}
+          </ul>
+          {expenses.length > 4 && (
+            <div className="d-flex justify-content-end mt-3">
+              <button className="btn btn-primary" onClick={toggleView}>
+                {showAll ? 'Hide' : 'View More'}
+              </button>
+            </div>
+          )}
+        </div>
 
-     </div>
-
-
-     
+        <div className="col-md-6 mt-3">
+          <h4>Add Expenses</h4>
+          <form onSubmit={handleSubmit}>
+            <div className="mt-2 w-100">
+              <input
+                className="form-control border-0"
+                placeholder="Amount *"
+                type="number"
+                id="amount"
+                name="amount"
+                value={newExpense.amount}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mt-2 w-100">
+              <input
+                className="form-control border-0"
+                placeholder="Category *"
+                type="text"
+                id="category"
+                name="category"
+                value={newExpense.category}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mt-2 w-100">
+              <input
+                className="form-control border-0"
+                placeholder="Description"
+                type="text"
+                id="description"
+                name="description"
+                value={newExpense.description}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="d-flex justify-content-end mt-3">
+              <button className="btn btn-primary w-100" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

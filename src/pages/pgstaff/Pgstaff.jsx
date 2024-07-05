@@ -40,7 +40,6 @@ const PgStaff = () => {
     handleUserOpen();
   };
 
-  console.log(selectedUser)
 
 
   const handleStaffData = () => {
@@ -67,7 +66,6 @@ const PgStaff = () => {
     });
 }
 
-console.log(staffData)
 
 
   const handleStaffDelete=async(staffId)=>{
@@ -87,7 +85,6 @@ console.log(staffData)
       }
   
       // If everything went fine, log success message.
-      console.log("Deleted Staff User Successfully");
       handleStaffData();
     } catch (error) {
       // Catch and log any errors that occur during the fetch or if the response is not ok.

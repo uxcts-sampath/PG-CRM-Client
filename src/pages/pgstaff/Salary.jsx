@@ -85,7 +85,6 @@ const StaffSalary = () => {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Salary paid successfully:', data);
 
             setPaymentDetails(prevPaymentDetails => ({
                 ...prevPaymentDetails,
@@ -191,7 +190,6 @@ const StaffSalary = () => {
         })
         .then(data => {
             if (Array.isArray(data) && data.length > 0) {
-                console.log('Received salary details:', data); // Log received data
     
                 // Find the latest salary transaction (assuming it's the last one in the array)
                 const latestSalary = data[data.length - 1];
@@ -225,7 +223,6 @@ const StaffSalary = () => {
     
     
 
-    console.log("ewgvsx",salaries.outstandingAmount)
 
     return (
         <>

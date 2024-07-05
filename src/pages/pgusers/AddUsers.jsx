@@ -140,7 +140,6 @@ const AddUsers=()=> {
     }
   };
   
-  console.log(formData)
   
 
   // Handle file change event to set profile photo
@@ -151,7 +150,6 @@ const handleFileChange = (event) => {
 
 
   useEffect(() => {
-    console.log('Location state:', location.state);
     if (location.state && location.state.user) {
       const userDataFromLocation = location.state.user;
       // Ensure you're setting all form fields correctly here
@@ -244,7 +242,6 @@ const handleSubmit = async (event) => {
       return;
   }
 
-  console.log('Form data before sending:', formData); // Log formData before sending
 
   const formDataToSend = {
       userType: formData.userType,
@@ -272,7 +269,6 @@ const handleSubmit = async (event) => {
       payment: formData.payment
   };
 
-  console.log('Form data to send:', formDataToSend);
 
   let formDataForApi = new FormData();
 
@@ -305,7 +301,6 @@ const handleSubmit = async (event) => {
 
       const responseData = await response.json();
 
-        console.log('Response from backend:', responseData);
 
 
       if (response.ok) {
@@ -377,8 +372,6 @@ const handleSubmit = async (event) => {
       return response.json();
     })
     .then(data => {
-      console.log("dfgvdfvx",data)
-      console.log("dfgvdfvx",)
      
       // Update the state with the fetched prices
       setSingleBedPrice(data.map((val)=>(val.singleBedPrice)));
