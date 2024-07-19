@@ -5,6 +5,8 @@ import { useAuth } from "../components/AuthContext";
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { Modal, Box, Typography, Button } from "@mui/material";
+
 
 const Login = ({ onSignin }) => {
   const navigate = useNavigate();
@@ -18,16 +20,25 @@ const Login = ({ onSignin }) => {
   const token = sessionStorage.getItem("token");
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const location = useLocation();
 
   useEffect(() => {
     if (location.state && location.state.signupSuccess) {
+      setIsModalVisible(true);
+      setModalMessage("Signup completed successfully. Please wait for Admin Approval.");
       setOpenSnackbar(true);
     }
   }, [location.state]);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    console.log("Modal closed");  // Debugging log
   };
 
   useEffect(() => {
@@ -229,6 +240,54 @@ const Login = ({ onSignin }) => {
           horizontal: 'right',
         }}
       />
+       <Modal
+        open={isModalVisible}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 300,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography id="modal-title" variant="h6" component="h2">
+            Account Status
+          </Typography>
+          <Typography id="modal-description" sx={{ mt: 2 }}>
+            {modalMessage}
+          </Typography>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3 }}
+            >
+            OK
+            </Button>
+            <IconButton
+            onClick={handleCloseModal}
+            sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            }}
+            >
+            <CloseIcon />
+            </IconButton>
+            </Box>
+            </Modal>
     </>
   );
 };

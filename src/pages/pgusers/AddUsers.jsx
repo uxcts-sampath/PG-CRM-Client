@@ -11,7 +11,7 @@ import Select from '@mui/material/Select';
 
 
  
-const AddUsers=()=> {
+const AddUsers=({ bulkUserData })=> {
   const token = sessionStorage.getItem('token');
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -38,6 +38,7 @@ const AddUsers=()=> {
   const [formData, setFormData] = useState({
     userType: '',
     name: '',
+    gender:'',
     fatherName: '',
     mobile: '',
     age: '',
@@ -66,7 +67,15 @@ const AddUsers=()=> {
   });
 
 
-
+  useEffect(() => {
+    // Set form data if bulkUserData is provided
+    if (bulkUserData) {
+      setFormData({
+        ...formData,
+        ...bulkUserData,
+      });
+    }
+  }, [bulkUserData]);
  
 
 
@@ -157,6 +166,7 @@ const handleFileChange = (event) => {
         hostelUserId:userDataFromLocation._id,
         userType: userDataFromLocation.userType,
         name: userDataFromLocation.name,
+        gender:userDataFromLocation.gender,
         fatherName: userDataFromLocation.fatherName,
         mobile: userDataFromLocation.mobile,
         age: userDataFromLocation.age,
@@ -198,6 +208,7 @@ const handleFileChange = (event) => {
     const newErrors = {};
     if (!formData.userType) newErrors.userType = 'User Type is required';
     if (!formData.name) newErrors.name = 'Name is required';
+    if(!formData.gender) newErrors.gender = "Gender required"
     if (!formData.fatherName) newErrors.fatherName = "Father's Name is required";
     if (!formData.mobile) {
       newErrors.mobile = 'Mobile Number is required';
@@ -246,6 +257,7 @@ const handleSubmit = async (event) => {
   const formDataToSend = {
       userType: formData.userType,
       name: formData.name,
+      gender:formData.gender,
       fatherName: formData.fatherName,
       mobile: formData.mobile,
       age: parseInt(formData.age),
@@ -409,9 +421,8 @@ return(
         <div className="col-xl-12 d-flex grid-margin stretch-card">
         <div className="card">
             <div className="card-body">
-            <Grid container spacing={6}>
-
-            <Grid item xs={12} sm={6}>
+ <Grid container spacing={6}>
+  <Grid item xs={12} sm={6}>
   <Select
     id="userType"
     name="userType"
@@ -421,8 +432,7 @@ return(
     required
     defaultValue="select type"
     value={formData.userType || "select type"} // Use formData.userType if it exists, otherwise fallback to "select type"
-    onChange={handleChange}
-  >
+    onChange={handleChange}>
     <MenuItem value="select type" disabled>Select User Type</MenuItem>
     <MenuItem value="student">Student</MenuItem>
     <MenuItem value="working emp">Working Employee</MenuItem>
@@ -430,8 +440,6 @@ return(
   </Select>
   <div className="Mui-error text-danger">{errors.userType}</div>
 </Grid>
-
-
 
     <Grid item xs={12} sm={6}>
       <TextField
@@ -447,6 +455,7 @@ return(
         helperText={errors.name}
       />
     </Grid>
+
     <Grid item  xs={12} sm={6}>
       <TextField
         required
@@ -475,6 +484,26 @@ return(
         helperText={errors.age}
       />
     </Grid>
+
+  <Grid item xs={12} sm={6}>
+  <Select
+    id="gender"
+    name="gender"
+    label="Gender"
+    variant="standard"
+    fullWidth
+    required
+    defaultValue="selectGender"
+    value={formData.gender || "selectGender"} 
+    onChange={handleChange}>
+    <MenuItem value="selectGender" disabled>Select Gender</MenuItem>
+    <MenuItem value="male">Male</MenuItem>
+    <MenuItem value="female">Female</MenuItem>
+  </Select>
+  <div className="Mui-error text-danger">{errors.gender}</div>
+</Grid>
+
+
     <Grid item xs={12} sm={6}>
       <TextField
         required
@@ -505,7 +534,7 @@ return(
       />
     </Grid>
 
-    <Grid item xs={12} sm={6}>
+  <Grid item xs={12} sm={6}>
   <TextField
     id="parentEmail"
     name="parentEmail"
@@ -520,8 +549,6 @@ return(
   />
 </Grid>
 
-    
-  
     <Grid item xs={12} sm={6}>
     <TextField
             id="referredBy"
@@ -581,23 +608,7 @@ return(
 </Grid>
 
 
-<Grid item xs={12} sm={6}>
-  <FormControl fullWidth>
-    <InputLabel shrink htmlFor="addressProof">
-      Address Proof
-    </InputLabel>
-    <TextField  
-      type="file"
-      id="addressProof"
-      name="addressProof"
-      fullWidth
-      autoComplete="address-proof"
-      variant="standard"
-      value={formData.addressProof}
-      onChange={handleChange}
-    />
-  </FormControl>
-</Grid>
+
 
 
     <Grid item xs={12} >
@@ -643,6 +654,24 @@ return(
         helperText={errors.state}
       />
     </Grid>
+
+    <Grid item xs={12} sm={6}>
+  <FormControl fullWidth>
+    <InputLabel shrink htmlFor="addressProof">
+      Address Proof
+    </InputLabel>
+    <TextField  
+      type="file"
+      id="addressProof"
+      name="addressProof"
+      fullWidth
+      autoComplete="address-proof"
+      variant="standard"
+      value={formData.addressProof}
+      onChange={handleChange}
+    />
+  </FormControl>
+</Grid>
     
     <Grid item xs={12} sm={6}>
   <FormControl fullWidth>
@@ -704,7 +733,7 @@ return(
        
   
 
-  <Grid item xs={12} sm={2}>
+  <Grid item xs={12} sm={6}>
     <FormControl variant="standard" fullWidth required>
       <InputLabel htmlFor="room">Room</InputLabel>
       <Select
@@ -728,7 +757,7 @@ return(
 
   
 
-  <Grid item xs={12} sm={2}>
+  <Grid item xs={12} sm={6}>
   <FormControl variant="standard" fullWidth required>
     <InputLabel htmlFor="bed">Bed</InputLabel>
     <Select

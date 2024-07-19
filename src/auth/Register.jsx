@@ -10,7 +10,9 @@ import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
-
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { TextField,InputAdornment } from "@mui/material";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -31,11 +33,14 @@ const Register = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Add this state variable
+
 
 
   // State variables for each step
   const [step1Data, setStep1Data] = useState({
     fullName: "",
+    gender:"",
     dateOfBirth: "",
     phoneNumber: "",
     aadharNumber: "",
@@ -95,6 +100,10 @@ const handleInputChange = (e, stepNumber) => {
         if (!step1Data.fullName) {
             currentErrors.fullName = "Full Name is required";
             isValid = false;
+        }
+        if(!step1Data.gender){
+          currentErrors.gender="Gender is required";
+          isValid = false;
         }
         if (!step1Data.dateOfBirth) {
           currentErrors.dateOfBirth = "Date of Birth is required";
@@ -261,7 +270,9 @@ const handleStepChange = (nextStep) => {
   };
   
   
-  
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   
   
   
@@ -334,8 +345,6 @@ const handleStepChange = (nextStep) => {
                     {step === 1 && (
                       <form onSubmit={handleSubmit}>
                         <div className="col-md-12">
-                        
-
                           <div className="form-group row">
                             <label className="col-sm-12">Full Name</label>
                             <div className="col-sm-12">
@@ -355,6 +364,31 @@ const handleStepChange = (nextStep) => {
                             </div>
                           </div>
                         </div>
+
+                        <div className="col-md-12">
+                          <div className="form-group row">
+                            <label className="col-sm-12 ">Gender</label>
+                            <div className="col-sm-12">
+                              <select
+                                className="form-control"
+                                name="gender"
+                                value={previousStepData.gender || step1Data.gender || ""}
+                                onChange={(e) => handleInputChange(e, 1)} 
+                                autoComplete="off"
+                              >
+                                <option value="gender">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                              </select>
+                              {errors.gender && (
+                                <div className="text-danger">
+                                  {errors.gender}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
                         <div className="col-md-12">
                           <div className="form-group row">
                             <label className="col-sm-12 ">Date of Birth</label>
@@ -440,19 +474,29 @@ const handleStepChange = (nextStep) => {
                           <div className="form-group row">
                             <label className="col-sm-12 ">Password</label>
                             <div className="col-sm-12">
-                              <input
-                                type="text"
-                                name="password"
-                                className="form-control"
-                                value={previousStepData.password || step1Data.password || ""}
-                                onChange={(e) => handleInputChange(e, 1)}
-                                autoComplete="off"
-                              />
-                              {errors.password && (
-                                <div className="text-danger">
-                                  {errors.password}
-                                </div>
-                              )}
+                            <TextField
+                            label="Password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            value={step1Data.password}
+                            onChange={(e) => handleInputChange(e, 1)}
+                            fullWidth
+                            margin="normal"
+                            InputProps={{
+                            endAdornment: (
+                            <InputAdornment position="end">
+                            <IconButton
+                                       aria-label="toggle password visibility"
+                                       onClick={togglePasswordVisibility}
+                                       edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                            </InputAdornment>
+                            ),
+                            }}
+                            error={Boolean(errors.password)}
+                            helperText={errors.password}
+                            />  
                             </div>
                           </div>
                         </div>
@@ -467,12 +511,11 @@ const handleStepChange = (nextStep) => {
                           </button>
                         </div>
                         <div className="text-center mt-4 font-weight-light">
-                          Don't have an account?{" "}
+                           Have an account?{" "}
                           <a
                             onClick={() => navigate("/")}
                             className="text-primary"
-                            style={{ cursor: "pointer" }}
-                          >
+                            style={{ cursor: "pointer" }} >
                             signin
                           </a>
                         </div>
@@ -550,6 +593,25 @@ const handleStepChange = (nextStep) => {
 
                         <div className="col-md-12">
                           <div className="form-group row">
+                            <label className="col-sm-12 ">City</label>
+                            <div className="col-sm-12">
+                              <input
+                                type="text"
+                                name="city"
+                                className="form-control"
+                                value={previousStepData.city || step2Data.city || ""}
+                                onChange={(e) => handleInputChange(e, 2)}
+                                autoComplete="off"
+                              />
+                              {errors.city && (
+                                <div className="text-danger">{errors.city}</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-md-12">
+                          <div className="form-group row">
                             <label className="col-sm-12 ">State</label>
                             <div className="col-sm-12">
                               <input
@@ -564,25 +626,6 @@ const handleStepChange = (nextStep) => {
                                 <div className="text-danger">
                                   {errors.state}
                                 </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="form-group row">
-                            <label className="col-sm-12 ">City</label>
-                            <div className="col-sm-12">
-                              <input
-                                type="text"
-                                name="city"
-                                className="form-control"
-                                value={previousStepData.city || step2Data.city || ""}
-                                onChange={(e) => handleInputChange(e, 2)}
-                                autoComplete="off"
-                              />
-                              {errors.city && (
-                                <div className="text-danger">{errors.city}</div>
                               )}
                             </div>
                           </div>
