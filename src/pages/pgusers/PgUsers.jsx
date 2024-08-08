@@ -9,6 +9,7 @@ import { saveAs } from "file-saver";
 
 const pgUsers = () => {
   const navigate=useNavigate()
+  const token = sessionStorage.getItem('token');
   const [value, setValue] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -19,6 +20,7 @@ const pgUsers = () => {
     setValue(newValue);
   };
 
+  
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -30,20 +32,25 @@ const pgUsers = () => {
 
  const handleBulkUpload = async (file) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("excelFile", file);
 
     try {
       const response = await fetch(`${apiUrl}/api/bulkUpload`, {
         method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+      },
         body: formData,
       });
 
       if (!response.ok) {
+        const errorResponse = await response.json();
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
       console.log("Upload successful:", data);
+      window.location.reload();
       // Optionally, you can navigate or show a success message here
     } catch (error) {
       console.error("Error uploading file:", error);

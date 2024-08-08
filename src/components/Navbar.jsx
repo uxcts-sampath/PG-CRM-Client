@@ -11,6 +11,9 @@ const Navbar = () => {
 
   const userName=sessionStorage.getItem("userName")
 
+  const userType = sessionStorage.getItem("userType");
+
+
 
 
 
@@ -23,7 +26,6 @@ const Navbar = () => {
   };
   
   
-
 
   useEffect(() => {
     const minimizeButton = document.querySelector('[data-toggle="minimize"]');

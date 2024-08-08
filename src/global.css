@@ -9,6 +9,10 @@
     box-shadow: 0 0 24px rgba(0, 0, 0, 0.5); /* Adjust the shadow color and opacity as needed */
     padding: 5px 30px 10px;
 }
+
+
+
+
 @media (max-width: 475px) {
     .pgsetup-modal {
         width: 90%; 

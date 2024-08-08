@@ -241,7 +241,7 @@ const handleDeletePhoto = async () => {
                   <thead>
                     <tr>
                     <th>Image</th>
-                    <th>Woking Emp ID</th>
+                    <th>ID</th>
                     <th>Name</th>
                       <th>Mobile</th>
                       <th>Room</th>

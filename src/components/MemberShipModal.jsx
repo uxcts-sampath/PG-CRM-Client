@@ -35,6 +35,8 @@ const MemberShipModal = (props) => {
       const navigate = useNavigate();
     const [showSnackbar, setShowSnackbar] = useState(false);
     const [floors, setFloors] = useState([]);
+    const userType = sessionStorage.getItem("userType");
+
 
     //   const [openWelcomeModal, setOpenWelcomeModal] = useState(false);
     const [openPaymentModal, setOpenPaymentModal] = useState(false);
@@ -218,6 +220,8 @@ const MemberShipModal = (props) => {
 
         <>
             <div>
+
+            {userType !== 'admin' && (
                 <Modal
                     open={openWelcomeModal}
                     aria-labelledby="modal-modal-title"
@@ -305,6 +309,7 @@ const MemberShipModal = (props) => {
                         </Grid>
                     </Box>
                 </Modal>
+                )}
 
 
                 <Modal

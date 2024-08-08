@@ -378,7 +378,7 @@ const handleSubmit = async (event) => {
       },
     })
     .then(response => {
-      if (!response.ok) {
+      if (!response.ok) { 
         throw new Error('Failed to fetch price data');
       }
       return response.json();

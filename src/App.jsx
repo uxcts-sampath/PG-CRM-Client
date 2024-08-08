@@ -8,6 +8,7 @@ import Forgotpassword from "./auth/Forgotpassword";
 import { useAuth } from "./components/AuthContext";
 import ResetPassword from "./auth/ResetPassword";
 import MemberShipModal from "./components/MemberShipModal";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const App = () => {
   const { isAuthenticated, signin } = useAuth();
@@ -24,6 +25,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login onSignin={signin} />} />
+          {/* <Route path="/admin" element={<AdminDashboard/>}/> */}
           <Route path="/home/*" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgotpassword" element={<Forgotpassword />} />

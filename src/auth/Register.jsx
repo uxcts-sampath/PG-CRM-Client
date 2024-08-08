@@ -374,9 +374,8 @@ const handleStepChange = (nextStep) => {
                                 name="gender"
                                 value={previousStepData.gender || step1Data.gender || ""}
                                 onChange={(e) => handleInputChange(e, 1)} 
-                                autoComplete="off"
-                              >
-                                <option value="gender">Select Gender</option>
+                                autoComplete="off" >
+                                <option style={{padding:'30px'}} value="gender">Select Gender</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
                               </select>

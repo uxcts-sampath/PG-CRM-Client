@@ -93,6 +93,14 @@ const handleSubmit = async () => {
       },
       body: JSON.stringify(formData),
     });
+
+
+    if (response.status === 400) {
+      const errorData = await response.json();
+      alert(errorData.message || 'Bad Request');
+      return;
+    }
+
   
 
     if (!response.ok) {
@@ -550,11 +558,7 @@ useEffect(()=>{
         <Typography style={{ cursor: 'pointer' }} onClick={handleRoomClose}><ClearIcon /></Typography>
       </div>
 
-      {/* Attached Washroom */}
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
-        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
-      </Box>
+    
 
       {/* Room Type */}
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
@@ -580,19 +584,31 @@ useEffect(()=>{
         <TextField id="roomNumber" name="roomnumber" variant="outlined" onChange={(e) => setRoomNumber(e.target.value)} />
       </Box>
 
+
+  {/* Number of Beds */}
+  {roomType === "shared" && (
+  <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+    <InputLabel htmlFor="numberOfBeds">No. of beds</InputLabel>
+    <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
+  </Box>
+)}
+
+      
+
+
+        {/* Attached Washroom */}
+        <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <InputLabel htmlFor="attachedWashRoom">Attached Washroom</InputLabel>
+        <Switch checked={attachedWashroom} onChange={handleToggleChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
+      </Box>
+
       {/* Shelf */}
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
         <InputLabel htmlFor="shelf">Shelf</InputLabel>
         <Switch checked={shelfChecked} onChange={handleShelfChange} inputProps={{ 'aria-label': 'controlled' }} color="secondary" />
       </Box>
 
-     {/* Number of Beds */}
-     {roomType === "shared" && (
-  <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-    <InputLabel htmlFor="numberOfBeds">No. of beds</InputLabel>
-    <TextField id="numberOfBeds" name="numberOfBeds" variant="outlined" onChange={(e) => setNumberOfBeds(e.target.value)} />
-  </Box>
-)}
+    
       {/* Buttons */}
       <Box style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
         <Button variant="outlined" color="secondary" onClick={handleRoomClose} style={{ marginRight: '27px' }}>Cancel</Button>

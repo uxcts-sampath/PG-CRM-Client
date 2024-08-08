@@ -31,6 +31,7 @@ const Home = () => {
   const userId = sessionStorage.getItem("userId");
   const userName = sessionStorage.getItem("userName");
   const userSize = sessionStorage.getItem("userSize");
+  const userType = sessionStorage.getItem("userType"); // Retrieve userType from session storage
   const navigate = useNavigate();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [floors, setFloors] = useState([]);
@@ -65,34 +66,6 @@ const Home = () => {
 
 
 
-  // useEffect(() => {
-  //   const hasActivePaymentPlan = sessionStorage.getItem("hasActivePaymentPlan") === "true";
-  //   const suspensionDate = new Date(sessionStorage.getItem("suspensionDate"));
-  //   const today = new Date();
-
-  //   // Check if the user is not on a payment plan and the suspension date has expired
-  //   if (!hasActivePaymentPlan && suspensionDate <= today) {
-  //     setOpenWelcomeModal(true);
-  //     const hideFree = sessionStorage.getItem("hideFreeOption") === "true";
-  //     setHideFreeOption(hideFree);
-  //   }
-  // }, []);
-
-
-  // // Check if the user has already selected a payment plan
-  // useEffect(() => {
-  //   const hasSelectedOptions = sessionStorage.getItem("hasSelectedOptions") === "true";
-  //   if (hasSelectedOptions) {
-  //     setOpenWelcomeModal(false);
-  //     setOpenPaymentModal(false);
-  //   } else {
-  //     setOpenWelcomeModal(true);
-  //   }
-  // }, []);
-
-
-
-
   useEffect(() => {
     // Calculate suspension time based on user's payment method and update state
     if (value === "free") {
@@ -102,12 +75,14 @@ const Home = () => {
     }
   }, [value]);
 
+  
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
       setShowSnackbar(true);
     }
   }, []);
+  
 
   const handleSnackbarClose = () => {
     setShowSnackbar(false);
@@ -255,6 +230,15 @@ const Home = () => {
   return (
 
     <>
+
+{userType === "admin" ? (
+        <div className="admin-content">
+          <h2>This is admin page</h2>
+          {/* Additional admin-specific content can go here */}
+        </div>
+      ) : (
+        <>
+
       <div className="row">
         <div className="col-sm-6">
           <h2 className="mb-0">Welcome <span className=" text-secondary">{userName}</span></h2>
@@ -310,7 +294,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-
+    
 
 
       {floors?.length > 0 && floors?.map((floor) => (
@@ -378,11 +362,13 @@ const Home = () => {
           </div>
         </div>
       ))}
-
+   
 
       <UpcomingFeeList />
 
-      <div>
+
+
+      {/* <div>
         <Modal
           open={openWelcomeModal}
           aria-labelledby="modal-modal-title"
@@ -518,8 +504,8 @@ const Home = () => {
             <Button onClick={handlePaymentReminderClose}>Close</Button>
           </Box>
         </Modal>
-      </div>
-
+      </div> */}
+    
       <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}
@@ -535,6 +521,8 @@ const Home = () => {
           horizontal: 'right', // You can adjust this as per your requirement
         }}
       />
+            </>
+      )}
 
     </>
   );

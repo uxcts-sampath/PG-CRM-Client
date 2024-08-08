@@ -247,7 +247,7 @@ const deleteModalStyle = {
                   <thead>
                     <tr>
                       <th>Image</th>
-                      <th>Student ID</th>
+                      <th>ID</th>
                       <th>Name</th>
                       <th>Mobile</th>
                       <th>Room</th>

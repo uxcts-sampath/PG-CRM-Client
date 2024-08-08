@@ -66,7 +66,7 @@ const Login = ({ onSignin }) => {
 
     try {
       // Send login data to the backend for validation
-      const response = await fetch(`${apiUrl}/api/signin`, {
+      const response = await fetch(`${apiUrl}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,9 +88,9 @@ const Login = ({ onSignin }) => {
             userSize, 
             hasActivePaymentPlan: paymentPlan, 
             suspensionDate, 
-            hideFreeOption
-          }
-        } = responseData;
+            hideFreeOption,
+          },userType
+         } = responseData;
 
         sessionStorage.setItem("token", token);
         sessionStorage.setItem("userId", userId);
@@ -101,12 +101,22 @@ const Login = ({ onSignin }) => {
         sessionStorage.setItem("paymentPlan", paymentPlan);
         sessionStorage.setItem("suspensionDate", suspensionDate);
         sessionStorage.setItem("hideFreeOption", hideFreeOption);
+        sessionStorage.setItem("userType", userType); // Store userType
+
 
         // Trigger the onSignin callback to update authentication state
-        onSignin();
+        onSignin(userType);
 
-        // Redirect to the dashboard after successful login
-        navigate("/home");
+        // if (userType === "admin") {
+        //   navigate("/admin");
+        // } else {
+        //   navigate("/home");
+        // }
+
+        // navigate(userType === 'admin' ? '/admin' : '/home');
+
+         navigate('/home')
+
       } else {
         console.log("Login failed", response.status, responseData.error);
         handleErrorResponse(response.status, responseData.message);
